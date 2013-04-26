@@ -1,0 +1,17 @@
+
+#include <iostream>
+#include <set>
+#include <sstream>
+#include <bitset>
+#include <cstring>
+
+#include <stdlib.h>
+#include <omp.h>
+#include <parallel/algorithm>
+#include <vector>
+
+#include "dedekindbase/dedekindbase.h"
+#include "dedekindint/dedekindint.h"
+#include "dedekindbit/dedekindbit.h"
+
+using namespace std;

@@ -1,0 +1,27 @@
+main.o: main.cpp main.ih dedekindbase/dedekindbase.h \
+ dedekindint/dedekindint.h dedekindint/../dedekindbase/dedekindbase.h \
+ dedekindbit/dedekindbit.h dedekindbit/../dedekindbase/dedekindbase.h
+concatenate.o: dedekindint/concatenate.cpp dedekindint/dedekindint.ih \
+ dedekindint/dedekindint.h dedekindint/../dedekindbase/dedekindbase.h
+dedekindint.o: dedekindint/dedekindint.cpp dedekindint/dedekindint.ih \
+ dedekindint/dedekindint.h dedekindint/../dedekindbase/dedekindbase.h
+generate.o: dedekindint/generate.cpp dedekindint/dedekindint.ih \
+ dedekindint/dedekindint.h dedekindint/../dedekindbase/dedekindbase.h
+generateMonotoneSets.o: dedekindint/generateMonotoneSets.cpp \
+ dedekindint/dedekindint.ih dedekindint/dedekindint.h \
+ dedekindint/../dedekindbase/dedekindbase.h
+operatorboolsetless.o: dedekindint/operatorboolsetless.cpp \
+ dedekindint/dedekindint.ih dedekindint/dedekindint.h \
+ dedekindint/../dedekindbase/dedekindbase.h
+operatorboolsetsetless.o: dedekindint/operatorboolsetsetless.cpp \
+ dedekindint/dedekindint.ih dedekindint/dedekindint.h \
+ dedekindint/../dedekindbase/dedekindbase.h
+operatorinsertset.o: dedekindint/operatorinsertset.cpp \
+ dedekindint/dedekindint.ih dedekindint/dedekindint.h \
+ dedekindint/../dedekindbase/dedekindbase.h
+operatorinsertsetset.o: dedekindint/operatorinsertsetset.cpp \
+ dedekindint/dedekindint.ih dedekindint/dedekindint.h \
+ dedekindint/../dedekindbase/dedekindbase.h
+operatorinsertsetsetset.o: dedekindint/operatorinsertsetsetset.cpp \
+ dedekindint/dedekindint.ih dedekindint/dedekindint.h \
+ dedekindint/../dedekindbase/dedekindbase.h
