@@ -3,5 +3,5 @@
 
 DedekindInt::DedekindInt()
 {
-    d_base = DedekindInt::setOfMonotoneSubsets({{ }, {{ }}});
+	d_base = DedekindInt::setOfMonotoneSubsets({{ }, {{ }}});
 }

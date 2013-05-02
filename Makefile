@@ -1,6 +1,7 @@
 
 # use g++ 4.7 together with C++11 as standard
-CC = g++
+CC = g++-4.7
+#CC = g++
 CFLAGS = --std=c++0x -Wall -pedantic -fopenmp -O2 -g
 LDFLAGS = -D_GLIBCXX_PARALLEL -fopenmp
 
