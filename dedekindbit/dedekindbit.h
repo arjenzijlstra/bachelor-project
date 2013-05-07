@@ -53,6 +53,11 @@ bool operator<=(std::bitset<size> lhs, std::bitset<size> const &rhs)
 	// }
 	// return true;
 }
+/*
+std::set<std::bitset<size>> powerset(std::set<std::bitset<size>> base)
+{
+
+}*/
 
 template <size_t size>
 std::bitset<size> reverse(std::bitset<size> bset)
@@ -96,12 +101,7 @@ class DedekindBit // : public DedekindBase<std::bitset<1>, BitSetLess>
 			std::cout << result5.size() << '\n';
 			std::cout << result6.size() << '\n';
 
-			for (auto iter = result3.begin(); iter != result3.end(); ++iter)
-			{
-				std::cout << *iter << ' ' << dual(*iter) << '\n';
-			}
-
-			//std::cout << generate(result6);
+			std::cout << generate(result6);
 		}
 
 
@@ -112,7 +112,7 @@ class DedekindBit // : public DedekindBase<std::bitset<1>, BitSetLess>
 			std::vector<std::bitset<size>> const &m1, size_t n = 0)
 	{
 		std::vector<std::bitset<(size << 1)>> m2;
-		//size_t mn = 0;
+		size_t mn = 0;
 
 		for_each(m1.begin(), m1.end(),
 		[&](std::bitset<size> const &iter)
@@ -123,6 +123,7 @@ class DedekindBit // : public DedekindBase<std::bitset<1>, BitSetLess>
 				if (iter <= iter2)
 				{
 					m2.push_back(concatenate(iter, iter2));
+					++mn;
 				}
 			});
 		});
@@ -144,14 +145,13 @@ class DedekindBit // : public DedekindBase<std::bitset<1>, BitSetLess>
 					++mn;
 				}
 			}
-			// if (omp_get_thread_num() == 0)
-			// {
-				if (idx1 % 100000 == 0)
+			//if (omp_get_thread_num() == 0)
+			//{
+				if (idx1 % 1000 == omp_get_thread_num())
 				{
 					std::cout << idx1 << ": " << mn << '\n';
-					std::cerr << "";
 				}
-			// }
+			//}
 		}
 		return mn;
 	}

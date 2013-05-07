@@ -18,6 +18,17 @@ std::ostream &operator<<(std::ostream &out, std::set<T, Alloc> const &rhs)
 }
 */
 
+/*
+std::set<size_t> powerset(std::set<size_t> base)
+{
+
+}
+
+void powersetRec(set<size_t> &powerset, set<size_t> const &base, auto iter)
+{
+	if (base.)
+}*/
+
 
 int main(int argc, char **argv)
 {
