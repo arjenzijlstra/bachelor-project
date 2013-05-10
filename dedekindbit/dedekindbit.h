@@ -3,7 +3,7 @@
 #define DEDEKINDBIT_H_
 
 #include <iostream>
-#include <set>
+#include <unordered_map>
 #include <bitset>
 #include <vector>
 #include <parallel/algorithm>
@@ -60,7 +60,7 @@ std::set<std::bitset<size>> powerset(std::set<std::bitset<size>> base)
 }*/
 
 template <size_t size>
-std::bitset<size> reverse(std::bitset<size> bset)
+std::bitset<size> reverse(std::bitset<size> const &bset)
 {
 	std::bitset<size> reverse;
 	for (size_t iter = 0; iter != size; ++iter)
@@ -71,9 +71,26 @@ std::bitset<size> reverse(std::bitset<size> bset)
 }
 
 template <size_t size>
-std::bitset<size> dual(std::bitset<size> bset)
+std::bitset<size> dual(std::bitset<size> const &bset)
 {
 	return reverse(bset).flip();
+}
+
+template <size_t size>
+size_t eta(std::bitset<size> const &monotoneSet,
+			  std::vector<std::bitset<size>> const &dn,
+			  std::unordered_map<std::bitset<size>, size_t> &values)
+{
+	size_t result = 0;
+	for (auto iter = dn.begin(); iter != dn.end(); ++iter)
+	{
+		if (*iter <= monotoneSet)
+		{
+			++result;
+		}
+	}
+
+	return result;
 }
 
 class DedekindBit // : public DedekindBase<std::bitset<1>, BitSetLess>
@@ -91,23 +108,45 @@ class DedekindBit // : public DedekindBase<std::bitset<1>, BitSetLess>
 			std::vector<std::bitset<8>> result3(generate(result2));
 			std::vector<std::bitset<16>> result4(generate(result3));
 			std::vector<std::bitset<32>> result5(generate(result4));
-			std::vector<std::bitset<64>> result6(generate(result5));
+			// std::vector<std::bitset<64>> result6(generate(result5));
 
 			std::cout << result0.size() << '\n';
 			std::cout << result1.size() << '\n';
 			std::cout << result2.size() << '\n';
 			std::cout << result3.size() << '\n';
 			std::cout << result4.size() << '\n';
-			std::cout << result5.size() << '\n';
-			std::cout << result6.size() << '\n';
+			// std::cout << result5.size() << '\n';
+			// std::cout << result6.size() << '\n';
 
-			std::cout << generate(result6);
+			std::cout << enumerate(result5) << '\n';
+
+			// std::cout << generate(result6);
+		}
+
+		template <size_t size>
+		size_t enumerate(std::vector<std::bitset<size>> const &dn)
+		{
+			std::unordered_map<std::bitset<size>, size_t> values;
+			size_t result = 0;
+
+			#pragma omp parallel for reduction(+:result) shared(dn) schedule(static, 1)
+			for (size_t idx1 = 0; idx1 < dn.size(); ++idx1)
+			{
+				for (size_t idx2 = 0; idx2 < dn.size(); ++idx2)
+				{
+					auto iter = dn[idx1];
+					auto iter2 = dn[idx2];
+					result += eta(iter & iter2, dn, values) *
+							    eta(dual(iter) & dual(iter2), dn, values);
+				}
+			}
+			return result;
 		}
 
 
 	// Make it possible to accept sets of bitsets using different Compare
 	// and Allocator classes
-	template<size_t size>
+	template <size_t size>
 	std::vector<std::bitset<(size << 1)>> generate(
 			std::vector<std::bitset<size>> const &m1, size_t n = 0)
 	{
@@ -147,10 +186,10 @@ class DedekindBit // : public DedekindBase<std::bitset<1>, BitSetLess>
 			}
 			//if (omp_get_thread_num() == 0)
 			//{
-				if (idx1 % 1000 == omp_get_thread_num())
-				{
+				// if (idx1 % 1000 == omp_get_thread_num())
+				// {
 					std::cout << idx1 << ": " << mn << '\n';
-				}
+				// }
 			//}
 		}
 		return mn;
