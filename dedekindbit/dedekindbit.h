@@ -78,8 +78,7 @@ std::bitset<size> dual(std::bitset<size> const &bset)
 
 template <size_t size>
 size_t eta(std::bitset<size> const &monotoneSet,
-			  std::vector<std::bitset<size>> const &dn,
-			  std::unordered_map<std::bitset<size>, size_t> &values)
+			  std::vector<std::bitset<size>> const &dn)
 {
 	size_t result = 0;
 	for (auto iter = dn.begin(); iter != dn.end(); ++iter)
@@ -126,7 +125,6 @@ class DedekindBit // : public DedekindBase<std::bitset<1>, BitSetLess>
 		template <size_t size>
 		size_t enumerate(std::vector<std::bitset<size>> const &dn)
 		{
-			std::unordered_map<std::bitset<size>, size_t> values;
 			size_t result = 0;
 
 			#pragma omp parallel for reduction(+:result) shared(dn) schedule(static, 1)
@@ -136,8 +134,8 @@ class DedekindBit // : public DedekindBase<std::bitset<1>, BitSetLess>
 				{
 					auto iter = dn[idx1];
 					auto iter2 = dn[idx2];
-					result += eta(iter & iter2, dn, values) *
-							    eta(dual(iter) & dual(iter2), dn, values);
+					result += eta(iter & iter2, dn) *
+							    eta(dual(iter) & dual(iter2), dn);
 				}
 			}
 			return result;
