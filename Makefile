@@ -1,9 +1,8 @@
 
 # use g++ 4.7 together with C++11 as standard
-#CC = g++-4.7
 CC = g++
-CFLAGS = --std=c++0x -Wall -pedantic -fopenmp -O2 -g
-LDFLAGS = -D_GLIBCXX_PARALLEL -fopenmp
+CFLAGS = --std=c++0x -Wall -Wextra -pedantic -fopenmp -O2 -g
+LDFLAGS = -fopenmp -lgmpxx -lgmp
 
 SOURCES = $(wildcard *.cpp */*.cpp)
 OBJECTS = $(SOURCES:.cpp=.o)
@@ -20,7 +19,7 @@ $(EXECUTABLE): $(OBJECTS)
 	$(CC) $(CFLAGS) -c "$<" -o "$@"
 
 clean:
-	rm -rf $(OBJECTS) $(EXECUTABLE)
+	rm -rf $(OBJECTS)
 
 make.dep: $(SOURCES)
 	$(CC) $(CFLAGS) -MM $^ > "$@"

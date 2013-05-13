@@ -7,7 +7,6 @@
 
 #include <stdlib.h>
 #include <omp.h>
-#include <parallel/algorithm>
 #include <vector>
 
 #include "dedekindbase/dedekindbase.h"

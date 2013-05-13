@@ -18,17 +18,69 @@ std::ostream &operator<<(std::ostream &out, std::set<T, Alloc> const &rhs)
 }
 */
 
-/*
-std::set<size_t> powerset(std::set<size_t> base)
+bool vectorLess(set<size_t> const &lhs,
+					 set<size_t> const &rhs)
 {
+	if (lhs.size() == rhs.size())
+	{
+		for (auto iter = lhs.begin(), iter2 = rhs.begin(); iter != lhs.end();
+				++iter, ++iter2)
+		{
+			if (*iter != *iter2)
+			{
+				return *iter < *iter2;
+			}
+		}
+	}
 
+	return lhs.size() < rhs.size();
 }
 
-void powersetRec(set<size_t> &powerset, set<size_t> const &base, auto iter)
+void powersetRec(std::vector<std::set<size_t>> &result,
+					  std::set<size_t> current, size_t n)
 {
-	if (base.)
-}*/
+	if (n == 0)
+	{
+		result.push_back(current);
+		return;
+	}
 
+	powersetRec(result, current, --n);
+	current.insert(n);
+	powersetRec(result, current, n);
+}
+
+std::vector<std::set<size_t>> powerset(size_t n)
+{
+	std::vector<std::set<size_t>> result;
+	std::set<size_t> current;
+	powersetRec(result, current, n);
+	sort(result.begin(), result.end(), vectorLess);
+
+	return result;
+}
+
+std::set<size_t> permute(std::vector<size_t> permutation, std::set<size_t> elem)
+{
+	std::set<size_t> result;
+	for (auto iter = elem.begin(); iter != elem.end(); ++iter)
+	{
+		result.insert(permutation[*iter]);
+	}
+	return result;
+}
+
+std::vector<size_t> mbfPermutation(std::vector<size_t> permutation,
+		std::vector<std::set<size_t>> ps)
+{
+	std::vector<size_t> result;
+	for (auto iter = ps.begin(); iter != ps.end(); ++iter)
+	{
+		std::set<size_t> tmp = permute(permutation, *iter);
+		result.push_back(find(ps.begin(), ps.end(), tmp) - ps.begin());
+	}
+	return result;
+}
 
 int main(int argc, char **argv)
 {
@@ -49,6 +101,28 @@ int main(int argc, char **argv)
 	//         });
 	//     });
 	// cerr << test2 << '\n';
+
+	vector<size_t> permutation;
+	vector<vector<size_t>> permutations;
+
+	for (size_t idx = 0; idx != 3; ++idx)
+	{
+		permutation.push_back(idx);
+	}
+
+	std::vector<std::set<size_t>> powerSet = powerset(3);
+
+	std::set<size_t> elem({0, 2});
+
+	do
+	{
+		permutations.push_back(permutation);
+		std::cout << permutation << " -> "
+					 << mbfPermutation(permutation, powerSet) << '\n';
+		//cout << permutation << ": " << elem << " -> " << permute(permutation, elem) << '\n';
+	}
+	while (std::next_permutation(permutation.begin(), permutation.end()));
+
 
 
 	if (argc == 2 && argv[1][0] == 'b')

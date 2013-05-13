@@ -9,6 +9,9 @@
 #include <parallel/algorithm>
 #include <algorithm>
 #include <omp.h>
+
+#include <gmpxx.h> // for big numbers
+
 #include "../dedekindbase/dedekindbase.h"
 
 class BitSetLess
@@ -77,13 +80,14 @@ std::bitset<size> dual(std::bitset<size> const &bset)
 }
 
 template <size_t size>
-size_t eta(std::bitset<size> const &monotoneSet,
+size_t eta(std::bitset<size> const &bset,
 			  std::vector<std::bitset<size>> const &dn)
 {
 	size_t result = 0;
-	for (auto iter = dn.begin(); iter != dn.end(); ++iter)
+	#pragma omp parallel for reduction(+:result) shared(bset, dn) schedule(static, 1) if (1000000 < dn.size())
+	for (size_t idx = 0; idx < dn.size(); ++idx)
 	{
-		if (*iter <= monotoneSet)
+		if (dn[idx] <= bset)
 		{
 			++result;
 		}
@@ -100,6 +104,8 @@ class DedekindBit // : public DedekindBase<std::bitset<1>, BitSetLess>
 
 		void generateMonotoneSubsets(size_t n)
 		{
+			std::cout << n << '\n';
+
 			std::vector<std::bitset<1>> result0({std::bitset<1>(0),
 					std::bitset<1>(1)});
 			std::vector<std::bitset<2>> result1(generate(result0));
@@ -107,7 +113,7 @@ class DedekindBit // : public DedekindBase<std::bitset<1>, BitSetLess>
 			std::vector<std::bitset<8>> result3(generate(result2));
 			std::vector<std::bitset<16>> result4(generate(result3));
 			std::vector<std::bitset<32>> result5(generate(result4));
-			// std::vector<std::bitset<64>> result6(generate(result5));
+			std::vector<std::bitset<64>> result6(generate(result5));
 
 			std::cout << result0.size() << '\n';
 			std::cout << result1.size() << '\n';
@@ -127,15 +133,27 @@ class DedekindBit // : public DedekindBase<std::bitset<1>, BitSetLess>
 		{
 			size_t result = 0;
 
+			std::unordered_map<std::bitset<size>, std::bitset<size>> duals;
+			std::unordered_map<std::bitset<size>, size_t> etas;
+
+			// Preprocess duals and eta's of all elements
+			for (size_t idx = 0; idx < dn.size(); ++idx)
+			{
+				duals[dn[idx]] = dual(dn[idx]);
+				etas[dn[idx]] = eta(dn[idx], dn);
+			}
+
+			std::cerr << "Preprocessing complete\n";
+
 			#pragma omp parallel for reduction(+:result) shared(dn) schedule(static, 1)
 			for (size_t idx1 = 0; idx1 < dn.size(); ++idx1)
 			{
-				for (size_t idx2 = 0; idx2 < dn.size(); ++idx2)
+				// for (size_t idx2 = 0; idx2 < dn.size(); ++idx2)
+				for (auto iter2 = dn.begin(); iter2 != dn.end(); ++iter2)
 				{
 					auto iter = dn[idx1];
-					auto iter2 = dn[idx2];
-					result += eta(iter & iter2, dn) *
-							    eta(dual(iter) & dual(iter2), dn);
+					// auto iter2 = dn[idx2];
+					result += etas[iter & *iter2] * etas[duals[iter] & duals[*iter2]];
 				}
 			}
 			return result;
@@ -146,24 +164,22 @@ class DedekindBit // : public DedekindBase<std::bitset<1>, BitSetLess>
 	// and Allocator classes
 	template <size_t size>
 	std::vector<std::bitset<(size << 1)>> generate(
-			std::vector<std::bitset<size>> const &m1, size_t n = 0)
+			std::vector<std::bitset<size>> const &m1)
 	{
 		std::vector<std::bitset<(size << 1)>> m2;
 		size_t mn = 0;
 
-		for_each(m1.begin(), m1.end(),
-		[&](std::bitset<size> const &iter)
+		for (auto iter = m1.begin(); iter != m1.end(); ++iter)
 		{
-			for_each(m1.begin(), m1.end(),
-			[&](std::bitset<size> const &iter2)
+			for (auto iter2 = m1.begin(); iter2 != m1.end(); ++iter2)
 			{
-				if (iter <= iter2)
+				if (*iter <= *iter2)
 				{
-					m2.push_back(concatenate(iter, iter2));
+					m2.push_back(concatenate(*iter, *iter2));
 					++mn;
 				}
-			});
-		});
+			}
+		}
 
 		return m2;
 	}
@@ -195,7 +211,7 @@ class DedekindBit // : public DedekindBase<std::bitset<1>, BitSetLess>
 
 	template <size_t size>
 	std::bitset<(size << 1)> concatenate(std::bitset<size> const &lhs,
-			std::bitset<size> const &rhs, size_t n = 0)
+			std::bitset<size> const &rhs)
 	{
 		size_t const new_size = (size << 1);
 		std::bitset<new_size> tmp_lhs(lhs.to_ullong() << size);
