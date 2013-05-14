@@ -18,6 +18,20 @@ std::ostream &operator<<(std::ostream &out, std::set<T, Alloc> const &rhs)
 }
 */
 
+template <typename T, size_t size>
+std::ostream &operator<<(std::ostream &out, std::array<T, size> const &rhs)
+{
+	out << '{';
+	for (auto iter = rhs.begin();
+			iter != rhs.end();
+				++iter)
+	{
+		out << ((iter != rhs.begin()) ? ", " : "") << *iter;
+	}
+	out << '}';
+	return out;
+}
+
 bool vectorLess(set<size_t> const &lhs,
 					 set<size_t> const &rhs)
 {
@@ -37,7 +51,7 @@ bool vectorLess(set<size_t> const &lhs,
 }
 
 void powersetRec(std::vector<std::set<size_t>> &result,
-					  std::set<size_t> current, size_t n)
+					  std::set<size_t> current, size_t const n)
 {
 	if (n == 0)
 	{
@@ -45,22 +59,28 @@ void powersetRec(std::vector<std::set<size_t>> &result,
 		return;
 	}
 
-	powersetRec(result, current, --n);
-	current.insert(n);
-	powersetRec(result, current, n);
+	size_t newN(n - 1);
+	powersetRec(result, current, newN);
+	current.insert(newN);
+	powersetRec(result, current, newN);
 }
 
-std::vector<std::set<size_t>> powerset(size_t n)
+template<size_t size>
+std::array<std::set<size_t>, size> powerset(size_t const n)
 {
-	std::vector<std::set<size_t>> result;
+	std::vector<std::set<size_t>> resultVector;
 	std::set<size_t> current;
-	powersetRec(result, current, n);
-	sort(result.begin(), result.end(), vectorLess);
+	powersetRec(resultVector, current, n);
+	sort(resultVector.begin(), resultVector.end(), vectorLess);
+
+	std::array<std::set<size_t>, size> result;
+	copy(resultVector.begin(), resultVector.end(), result.begin());
 
 	return result;
 }
 
-std::set<size_t> permute(std::vector<size_t> permutation, std::set<size_t> elem)
+template<size_t size>
+std::set<size_t> permute(std::array<size_t, size> permutation, std::set<size_t> elem)
 {
 	std::set<size_t> result;
 	for (auto iter = elem.begin(); iter != elem.end(); ++iter)
@@ -70,14 +90,16 @@ std::set<size_t> permute(std::vector<size_t> permutation, std::set<size_t> elem)
 	return result;
 }
 
-std::vector<size_t> mbfPermutation(std::vector<size_t> permutation,
-		std::vector<std::set<size_t>> ps)
+template<size_t size, size_t size2>
+std::array<size_t, size2> mbfPermutation(std::array<size_t, size> permutation,
+		std::array<std::set<size_t>, size2> ps)
 {
-	std::vector<size_t> result;
+	std::array<size_t, size2> result;
+	size_t idx = 0;
 	for (auto iter = ps.begin(); iter != ps.end(); ++iter)
 	{
 		std::set<size_t> tmp = permute(permutation, *iter);
-		result.push_back(find(ps.begin(), ps.end(), tmp) - ps.begin());
+		result[idx++] = find(ps.begin(), ps.end(), tmp) - ps.begin();
 	}
 	return result;
 }
@@ -102,17 +124,21 @@ int main(int argc, char **argv)
 	//     });
 	// cerr << test2 << '\n';
 
-	vector<size_t> permutation;
-	vector<vector<size_t>> permutations;
+	size_t const n = 4;
+	size_t const p = pow(2, n);
+	array<size_t, n> permutation;
+	vector<array<size_t, n>> permutations;
 
-	for (size_t idx = 0; idx != 3; ++idx)
+	for (size_t idx = 0; idx != n; ++idx)
 	{
-		permutation.push_back(idx);
+		permutation[idx] = idx;
 	}
 
-	std::vector<std::set<size_t>> powerSet = powerset(3);
+	std::array<std::set<size_t>, p> powerSet = powerset<p>(n);
 
 	std::set<size_t> elem({0, 2});
+
+	cout << powerSet << '\n';
 
 	do
 	{
@@ -155,30 +181,8 @@ int main(int argc, char **argv)
 		//     }
 		// };
 
-		// set<bitset<1>, BitSetLess> result0({bitset<1>(0), bitset<1>(1)});
-		// set<bitset<2>, BitSetLess> result1(generateD(result0));
-		// set<bitset<4>, BitSetLess> result2(generateD(result1));
-		// set<bitset<8>, BitSetLess> result3(generateD(result2));
-		// set<bitset<16>, BitSetLess> result4(generateD(result3));
-		// set<bitset<32>, BitSetLess> result5(generateD(result4));
-		// set<bitset<64>, BitSetLess> result6(generateD(result5));
-		// // set<bitset<128>, BitSetLess> result7(generateD(result6));
-
-		// cout << result0 << '\n' << result0.size() << '\n';
-		// cout << result1 << '\n' << result1.size() << '\n';
-		// cout << result2 << '\n' << result2.size() << '\n';
-		// cout << result3 << '\n' << result3.size() << '\n';
-		// cout << result4.size() << '\n';
-		// cout << result5.size() << '\n';
-		// cout << result6.size() << '\n';
-
 		DedekindBit dedekind;
 		dedekind.generateMonotoneSubsets(0);
-
-		//vector<bitset<1>> start({bitset<1>(0), bitset<1>(1)});
-		//for (size_t idx = 0; idx != start.size(); ++idx)
-		 //   cout << start[idx] << '\n';
-
 	}
 	else
 	{

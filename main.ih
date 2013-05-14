@@ -3,11 +3,12 @@
 #include <set>
 #include <sstream>
 #include <bitset>
+#include <vector>
+#include <array>
 #include <cstring>
 
 #include <stdlib.h>
 #include <omp.h>
-#include <vector>
 
 #include "dedekindbase/dedekindbase.h"
 #include "dedekindint/dedekindint.h"
