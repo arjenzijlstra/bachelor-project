@@ -1,12 +1,10 @@
 
-#ifndef DEDEKINDINT_H
-#define DEDEKINDINT_H
+#ifndef DEDEKINDINT_H_
+#define DEDEKINDINT_H_
 
 #include <set>
 #include <algorithm>
 #include <iostream>
-
-#include "../dedekindbase/dedekindbase.h"
 
 #if 0  // chose for standard or own implementation
 
@@ -57,32 +55,29 @@ bool operator<=(std::set<Type, Less> const &lhs,
 }
 
 
-class DedekindInt: public DedekindBase<
-		std::set<std::set<size_t>, SetLess>, SetSetLess>
+namespace Dedekind
 {
 	typedef std::set<std::set<size_t>, SetLess> monotoneSubset;
 	typedef std::set<monotoneSubset, SetSetLess> setOfMonotoneSubsets;
 
-	public:
-		DedekindInt();
-		void generateMonotoneSubsets(size_t n);
+	setOfMonotoneSubsets monotoneSubsets(size_t n);
 
-	private:
-		setOfMonotoneSubsets generate(
-				setOfMonotoneSubsets const &m1, size_t n);
+	setOfMonotoneSubsets generate(setOfMonotoneSubsets const &m1, size_t n);
 
-		monotoneSubset concatenate(
-				monotoneSubset const &lhs,
+	namespace Internal
+	{
+		monotoneSubset concatenate(monotoneSubset const &lhs,
 				monotoneSubset const &rhs, size_t n);
-};
+	}
+}
 
 std::ostream &operator<<(std::ostream &out, std::set<size_t> const &rhs);
 
 std::ostream &operator<<(std::ostream &out,
-	std::set<std::set<size_t>, SetLess> const &rhs);
+		std::set<std::set<size_t>, SetLess> const &rhs);
 
 std::ostream &operator<<(std::ostream &out,
-	std::set<std::set<std::set<size_t>, SetLess>, SetSetLess> const &rhs);
+		std::set<std::set<std::set<size_t>, SetLess>, SetSetLess> const &rhs);
 
 
-#endif // end of guard DEDEKINDINT_H
+#endif // end of guard DEDEKINDINT_H_

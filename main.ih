@@ -10,8 +10,7 @@
 #include <stdlib.h>
 #include <omp.h>
 
-#include "dedekindbase/dedekindbase.h"
 #include "dedekindint/dedekindint.h"
-#include "dedekindbit/dedekindbit.h"
+#include "dedekind/dedekind.h"
 
 using namespace std;

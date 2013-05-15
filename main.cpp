@@ -106,83 +106,36 @@ std::array<size_t, size2> mbfPermutation(std::array<size_t, size> permutation,
 
 int main(int argc, char **argv)
 {
+	// size_t const n = 4;
+	// size_t const p = pow(2, n);
+	// array<size_t, n> permutation;
+	// vector<array<size_t, n>> permutations;
 
-	// set<bitset<1>, BitSetLess> test({bitset<1>(1), bitset<1>(0)});
-	// set<bitset<2>, BitSetLess> test2;
+	// for (size_t idx = 0; idx != n; ++idx)
+	// {
+	// 	permutation[idx] = idx;
+	// }
 
-	// __gnu_parallel::for_each(test.begin(), test.end(),// std::inserter(test2, test2.begin()),
-	//     [&](bitset<1> const &arg)
-	//     {
-	//         __gnu_parallel::for_each(test.begin(), test.end(),
-	//         [&](bitset<1> const &arg2)
-	//         {
-	//             if (arg <= arg2)
-	//             {
-	//                 test2.insert(concatenate(arg, arg2));
-	//             }
-	//         });
-	//     });
-	// cerr << test2 << '\n';
+	// std::array<std::set<size_t>, p> powerSet = powerset<p>(n);
 
-	size_t const n = 4;
-	size_t const p = pow(2, n);
-	array<size_t, n> permutation;
-	vector<array<size_t, n>> permutations;
+	// std::set<size_t> elem({0, 2});
 
-	for (size_t idx = 0; idx != n; ++idx)
-	{
-		permutation[idx] = idx;
-	}
+	// cout << powerSet << '\n';
 
-	std::array<std::set<size_t>, p> powerSet = powerset<p>(n);
-
-	std::set<size_t> elem({0, 2});
-
-	cout << powerSet << '\n';
-
-	do
-	{
-		permutations.push_back(permutation);
-		std::cout << permutation << " -> "
-					 << mbfPermutation(permutation, powerSet) << '\n';
-		//cout << permutation << ": " << elem << " -> " << permute(permutation, elem) << '\n';
-	}
-	while (std::next_permutation(permutation.begin(), permutation.end()));
+	// do
+	// {
+	// 	permutations.push_back(permutation);
+	// 	std::cout << permutation << " -> "
+	// 				 << mbfPermutation(permutation, powerSet) << '\n';
+	// 	//cout << permutation << ": " << elem << " -> " << permute(permutation, elem) << '\n';
+	// }
+	// while (std::next_permutation(permutation.begin(), permutation.end()));
 
 
 
 	if (argc == 2 && argv[1][0] == 'b')
 	{
-		// size_t const sizes[8] = {1, 2, 4, 8, 16, 32, 64, 128};
-		// set<bitset<1>, BitSetLess> D0({bitset<1>(0), bitset<1>(1)});
-		// set<bitset<32>, BitSetLess> result;
-		// for (size_t iter = 0; iter != n; ++iter)
-		// {
-		//     set<bitset<sizes[iter]>, BitSetLess> tmp;
-		//     if (iter == 0)
-		//     {
-		//         tmp = generate(D0);
-		//     }
-		//     else
-		//     {
-		//         tmp = generateD(result);
-		//     }
-		//     result = tmp;
-		// }
-
-		// struct bitsetWrapper {
-		//     bitset<1> *bit1;
-		//     bitset<2> *bit2;
-
-		//     set(int n) {
-		//         switch (n) {
-		//             case 1: return bit1;
-		//         }
-		//     }
-		// };
-
-		DedekindBit dedekind;
-		dedekind.generateMonotoneSubsets(0);
+		cout << Dedekind::monotoneSubsets<7>() << '\n';
 	}
 	else
 	{
@@ -191,29 +144,7 @@ int main(int argc, char **argv)
 		{
 			stringstream ss(argv[1]);
 			ss >> n;
-			// cout << n << '\n';
 		}
-		DedekindInt dedekind;
-		dedekind.generateMonotoneSubsets(n);
-
-		cout << dedekind.base().size() << '\n';
-		cout << dedekind.base() << '\n';
-
-
-		// set<set<set<size_t>, SetLess>, SetLess> result({{ }, {{ }}});
-
-		// size_t k = 0;
-		// // cout << "Computing Dedekind number: " << n << '\n';
-		// for (size_t iter = 0; iter != n; ++iter)
-		// {
-		//     result = generate(result, k++);
-		//     size_t dn = result.size();
-		//     cout << "Number of elements: " << dn << '\n';
-		//     if (dn < 100)
-		//     {
-		//         cout << result << '\n';
-		//     }
-		// }
-		// cout << result.size() << '\n';
+		cout << Dedekind::monotoneSubsets(n);
 	}
 }

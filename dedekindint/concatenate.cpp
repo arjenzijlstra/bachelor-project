@@ -1,14 +1,12 @@
 
 #include "dedekindint.ih"
 
-DedekindInt::monotoneSubset DedekindInt::concatenate(
-		DedekindInt::monotoneSubset const &lhs,
-		DedekindInt::monotoneSubset const &rhs, size_t n)
+Dedekind::monotoneSubset Dedekind::Internal::concatenate(
+		Dedekind::monotoneSubset const &lhs,
+		Dedekind::monotoneSubset const &rhs, size_t n)
 {
-	DedekindInt::monotoneSubset result;
-	for (set<set<size_t>>::iterator iter = rhs.begin();
-			iter != rhs.end();
-				++iter)
+	Dedekind::monotoneSubset result;
+	for (auto iter = rhs.begin(); iter != rhs.end(); ++iter)
 	{
 		set<size_t> tmp(*iter);
 		tmp.insert(n);

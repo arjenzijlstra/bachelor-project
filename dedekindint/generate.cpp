@@ -1,8 +1,8 @@
 
 #include "dedekindint.ih"
 
-DedekindInt::setOfMonotoneSubsets DedekindInt::generate(
-	DedekindInt::setOfMonotoneSubsets const &m1, size_t n)
+Dedekind::setOfMonotoneSubsets Dedekind::generate(
+		Dedekind::setOfMonotoneSubsets const &m1, size_t n)
 {
 	setOfMonotoneSubsets m2;
 	size_t mn = 0;
@@ -13,7 +13,8 @@ DedekindInt::setOfMonotoneSubsets DedekindInt::generate(
 		{
 			if (*iter <= *iter2)
 			{
-				set<set<size_t>, SetLess> tmp = concatenate(*iter, *iter2, n);
+				set<set<size_t>, SetLess> tmp =
+						Internal::concatenate(*iter, *iter2, n);
 				m2.insert(tmp);
 				++mn;
 			}

@@ -5,7 +5,9 @@ bool SetSetLess::operator()(set<set<size_t>, SetLess> const &lhs,
 		set<set<size_t>, SetLess> const &rhs) const
 {
 	if (lhs.size() != rhs.size())
+	{
 		return lhs.size() < rhs.size();
+	}
 
 	auto iter2 = rhs.begin();
 	for (auto iter = lhs.begin(); iter != lhs.end(); ++iter)

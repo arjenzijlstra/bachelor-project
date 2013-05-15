@@ -1,27 +1,17 @@
-main.o: main.cpp main.ih dedekindbase/dedekindbase.h \
- dedekindint/dedekindint.h dedekindint/../dedekindbase/dedekindbase.h \
- dedekindbit/dedekindbit.h dedekindbit/../dedekindbase/dedekindbase.h
+main.o: main.cpp main.ih dedekindint/dedekindint.h dedekind/dedekind.h
 concatenate.o: dedekindint/concatenate.cpp dedekindint/dedekindint.ih \
- dedekindint/dedekindint.h dedekindint/../dedekindbase/dedekindbase.h
-dedekindint.o: dedekindint/dedekindint.cpp dedekindint/dedekindint.ih \
- dedekindint/dedekindint.h dedekindint/../dedekindbase/dedekindbase.h
+ dedekindint/dedekindint.h
 generate.o: dedekindint/generate.cpp dedekindint/dedekindint.ih \
- dedekindint/dedekindint.h dedekindint/../dedekindbase/dedekindbase.h
-generateMonotoneSets.o: dedekindint/generateMonotoneSets.cpp \
- dedekindint/dedekindint.ih dedekindint/dedekindint.h \
- dedekindint/../dedekindbase/dedekindbase.h
+ dedekindint/dedekindint.h
+monotoneSubsets.o: dedekindint/monotoneSubsets.cpp \
+ dedekindint/dedekindint.ih dedekindint/dedekindint.h
 operatorboolsetless.o: dedekindint/operatorboolsetless.cpp \
- dedekindint/dedekindint.ih dedekindint/dedekindint.h \
- dedekindint/../dedekindbase/dedekindbase.h
+ dedekindint/dedekindint.ih dedekindint/dedekindint.h
 operatorboolsetsetless.o: dedekindint/operatorboolsetsetless.cpp \
- dedekindint/dedekindint.ih dedekindint/dedekindint.h \
- dedekindint/../dedekindbase/dedekindbase.h
+ dedekindint/dedekindint.ih dedekindint/dedekindint.h
 operatorinsertset.o: dedekindint/operatorinsertset.cpp \
- dedekindint/dedekindint.ih dedekindint/dedekindint.h \
- dedekindint/../dedekindbase/dedekindbase.h
+ dedekindint/dedekindint.ih dedekindint/dedekindint.h
 operatorinsertsetset.o: dedekindint/operatorinsertsetset.cpp \
- dedekindint/dedekindint.ih dedekindint/dedekindint.h \
- dedekindint/../dedekindbase/dedekindbase.h
+ dedekindint/dedekindint.ih dedekindint/dedekindint.h
 operatorinsertsetsetset.o: dedekindint/operatorinsertsetsetset.cpp \
- dedekindint/dedekindint.ih dedekindint/dedekindint.h \
- dedekindint/../dedekindbase/dedekindbase.h
+ dedekindint/dedekindint.ih dedekindint/dedekindint.h
