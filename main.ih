@@ -5,7 +5,8 @@
 #include <bitset>
 #include <vector>
 #include <array>
-#include <cstring>
+
+#include <mpi.h>
 
 #include <stdlib.h>
 #include <omp.h>

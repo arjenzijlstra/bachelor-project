@@ -1,6 +1,7 @@
 
 # use g++ 4.7 together with C++11 as standard
-CC = g++
+#CC = g++
+CC = mpic++
 CFLAGS = --std=c++0x -Wall -Wextra -pedantic -fopenmp -O2 -g
 LDFLAGS = -fopenmp -lgmpxx -lgmp
 

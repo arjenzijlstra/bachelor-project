@@ -131,7 +131,22 @@ int main(int argc, char **argv)
 	// }
 	// while (std::next_permutation(permutation.begin(), permutation.end()));
 
+	MPI::Init(argc, argv);
+	MPI::COMM_WORLD.Set_errhandler(MPI::ERRORS_THROW_EXCEPTIONS);
 
+	size_t rank = 0;
+	size_t size = 1;
+	try
+	{
+		rank = MPI::COMM_WORLD.Get_rank();
+		size = MPI::COMM_WORLD.Get_size();
+		std::cout << "I am " << rank << " of " << size << '\n';
+	}
+	catch (MPI::Exception e)
+	{
+		cerr << "MPI ERROR: " << e.Get_error_code()
+			  << " - " << e.Get_error_string() << endl;
+	}
 
 	if (argc == 2 && argv[1][0] == 'b')
 	{
@@ -139,12 +154,16 @@ int main(int argc, char **argv)
 	}
 	else
 	{
-		size_t n = 0;
-		if (argc == 2)
+		if (rank == 0)
 		{
-			stringstream ss(argv[1]);
-			ss >> n;
+			size_t n = 0;
+			if (argc == 2)
+			{
+				stringstream ss(argv[1]);
+				ss >> n;
+			}
+			cout << Dedekind::monotoneSubsets(n);
 		}
-		cout << Dedekind::monotoneSubsets(n);
 	}
+	MPI::Finalize();
 }

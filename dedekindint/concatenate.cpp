@@ -10,7 +10,7 @@ Dedekind::monotoneSubset Dedekind::Internal::concatenate(
 	{
 		set<size_t> tmp(*iter);
 		tmp.insert(n);
-		result.insert(tmp);
+		result.push_back(tmp);
 	}
 
 	return (lhs + result);

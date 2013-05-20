@@ -36,16 +36,17 @@ class SetSetLess
 
 #endif
 
-template <typename Type, typename Less>
-std::set<Type, Less> operator+(std::set<Type, Less> const &lhs,
-	std::set<Type, Less> const &rhs)
+template <typename Type>
+std::vector<Type> operator+(std::vector<Type> const &lhs,
+	std::vector<Type> const &rhs)
 {
-	std::set<Type, Less> result;
+	std::vector<Type> result;
 	std::set_union(lhs.begin(), lhs.end(), rhs.begin(), rhs.end(),
 		std::inserter(result, result.end()));
 
 	return result;
 }
+
 
 template <typename Type, typename Less>
 bool operator<=(std::set<Type, Less> const &lhs,
@@ -57,8 +58,8 @@ bool operator<=(std::set<Type, Less> const &lhs,
 
 namespace Dedekind
 {
-	typedef std::set<std::set<size_t>, SetLess> monotoneSubset;
-	typedef std::set<monotoneSubset, SetSetLess> setOfMonotoneSubsets;
+	typedef std::vector<std::set<size_t>> monotoneSubset;
+	typedef std::vector<monotoneSubset> setOfMonotoneSubsets;
 
 	setOfMonotoneSubsets monotoneSubsets(size_t n);
 
@@ -74,10 +75,10 @@ namespace Dedekind
 std::ostream &operator<<(std::ostream &out, std::set<size_t> const &rhs);
 
 std::ostream &operator<<(std::ostream &out,
-		std::set<std::set<size_t>, SetLess> const &rhs);
+		Dedekind::monotoneSubset const &rhs);
 
 std::ostream &operator<<(std::ostream &out,
-		std::set<std::set<std::set<size_t>, SetLess>, SetSetLess> const &rhs);
+		Dedekind::setOfMonotoneSubsets const &rhs);
 
 
 #endif // end of guard DEDEKINDINT_H_

@@ -1,4 +1,37 @@
-main.o: main.cpp main.ih dedekindint/dedekindint.h dedekind/dedekind.h
+main.o: main.cpp main.ih /usr/local/Cellar/open-mpi/1.6.3/include/mpi.h \
+ /usr/local/Cellar/open-mpi/1.6.3/include/mpi_portable_platform.h \
+ /usr/local/Cellar/open-mpi/1.6.3/include/openmpi/ompi/mpi/cxx/mpicxx.h \
+ /usr/local/Cellar/open-mpi/1.6.3/include/openmpi/ompi/mpi/cxx/constants.h \
+ /usr/local/Cellar/open-mpi/1.6.3/include/openmpi/ompi/mpi/cxx/functions.h \
+ /usr/local/Cellar/open-mpi/1.6.3/include/openmpi/ompi/mpi/cxx/datatype.h \
+ /usr/local/Cellar/open-mpi/1.6.3/include/openmpi/ompi/mpi/cxx/exception.h \
+ /usr/local/Cellar/open-mpi/1.6.3/include/openmpi/ompi/mpi/cxx/op.h \
+ /usr/local/Cellar/open-mpi/1.6.3/include/openmpi/ompi/mpi/cxx/status.h \
+ /usr/local/Cellar/open-mpi/1.6.3/include/openmpi/ompi/mpi/cxx/request.h \
+ /usr/local/Cellar/open-mpi/1.6.3/include/openmpi/ompi/mpi/cxx/group.h \
+ /usr/local/Cellar/open-mpi/1.6.3/include/openmpi/ompi/mpi/cxx/comm.h \
+ /usr/local/Cellar/open-mpi/1.6.3/include/openmpi/ompi/mpi/cxx/win.h \
+ /usr/local/Cellar/open-mpi/1.6.3/include/openmpi/ompi/mpi/cxx/file.h \
+ /usr/local/Cellar/open-mpi/1.6.3/include/openmpi/ompi/mpi/cxx/errhandler.h \
+ /usr/local/Cellar/open-mpi/1.6.3/include/openmpi/ompi/mpi/cxx/intracomm.h \
+ /usr/local/Cellar/open-mpi/1.6.3/include/openmpi/ompi/mpi/cxx/topology.h \
+ /usr/local/Cellar/open-mpi/1.6.3/include/openmpi/ompi/mpi/cxx/intercomm.h \
+ /usr/local/Cellar/open-mpi/1.6.3/include/openmpi/ompi/mpi/cxx/info.h \
+ /usr/local/Cellar/open-mpi/1.6.3/include/openmpi/ompi/mpi/cxx/datatype_inln.h \
+ /usr/local/Cellar/open-mpi/1.6.3/include/openmpi/ompi/mpi/cxx/functions_inln.h \
+ /usr/local/Cellar/open-mpi/1.6.3/include/openmpi/ompi/mpi/cxx/request_inln.h \
+ /usr/local/Cellar/open-mpi/1.6.3/include/openmpi/ompi/mpi/cxx/comm_inln.h \
+ /usr/local/Cellar/open-mpi/1.6.3/include/openmpi/ompi/mpi/cxx/intracomm_inln.h \
+ /usr/local/Cellar/open-mpi/1.6.3/include/openmpi/ompi/mpi/cxx/topology_inln.h \
+ /usr/local/Cellar/open-mpi/1.6.3/include/openmpi/ompi/mpi/cxx/intercomm_inln.h \
+ /usr/local/Cellar/open-mpi/1.6.3/include/openmpi/ompi/mpi/cxx/group_inln.h \
+ /usr/local/Cellar/open-mpi/1.6.3/include/openmpi/ompi/mpi/cxx/op_inln.h \
+ /usr/local/Cellar/open-mpi/1.6.3/include/openmpi/ompi/mpi/cxx/errhandler_inln.h \
+ /usr/local/Cellar/open-mpi/1.6.3/include/openmpi/ompi/mpi/cxx/status_inln.h \
+ /usr/local/Cellar/open-mpi/1.6.3/include/openmpi/ompi/mpi/cxx/info_inln.h \
+ /usr/local/Cellar/open-mpi/1.6.3/include/openmpi/ompi/mpi/cxx/win_inln.h \
+ /usr/local/Cellar/open-mpi/1.6.3/include/openmpi/ompi/mpi/cxx/file_inln.h \
+ dedekindint/dedekindint.h dedekind/dedekind.h
 concatenate.o: dedekindint/concatenate.cpp dedekindint/dedekindint.ih \
  dedekindint/dedekindint.h
 generate.o: dedekindint/generate.cpp dedekindint/dedekindint.ih \
@@ -9,9 +42,11 @@ operatorboolsetless.o: dedekindint/operatorboolsetless.cpp \
  dedekindint/dedekindint.ih dedekindint/dedekindint.h
 operatorboolsetsetless.o: dedekindint/operatorboolsetsetless.cpp \
  dedekindint/dedekindint.ih dedekindint/dedekindint.h
+operatorinsertMonotoneSubsets.o: \
+ dedekindint/operatorinsertMonotoneSubsets.cpp dedekindint/dedekindint.ih \
+ dedekindint/dedekindint.h
+operatorinsertSetOfMonontoneSubsets.o: \
+ dedekindint/operatorinsertSetOfMonontoneSubsets.cpp \
+ dedekindint/dedekindint.ih dedekindint/dedekindint.h
 operatorinsertset.o: dedekindint/operatorinsertset.cpp \
- dedekindint/dedekindint.ih dedekindint/dedekindint.h
-operatorinsertsetset.o: dedekindint/operatorinsertsetset.cpp \
- dedekindint/dedekindint.ih dedekindint/dedekindint.h
-operatorinsertsetsetset.o: dedekindint/operatorinsertsetsetset.cpp \
  dedekindint/dedekindint.ih dedekindint/dedekindint.h
