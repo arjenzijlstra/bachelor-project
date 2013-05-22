@@ -1,8 +1,16 @@
 
 #include "main.ih"
 
-#define DEDEKINDNUMBER 7
+#define DEDEKINDNUMBER 6
 #define BUFFSIZE 32
+
+
+static double timer(void)
+{
+	struct timeval tm;
+	gettimeofday(&tm, NULL);
+	return tm.tv_sec + tm.tv_usec / 1000000.0;
+}
 
 /*
 template <typename T, typename Alloc>
@@ -153,9 +161,10 @@ int main(int argc, char **argv)
 
 	if (argc == 2 && argv[1][0] == 'b')
 	{
+		double timer1 = timer();
+
 		mpz_class result = Dedekind::monotoneSubsets<DEDEKINDNUMBER>(rank, size);
 
-		cout << "process: " << rank << ": " << result << '\n';
 		if (rank == 0)
 		{
 			size_t toReceive = size - 1;
@@ -169,14 +178,16 @@ int main(int argc, char **argv)
 				mpz_class tmp(buffer);
 				result += tmp;
 			}
-
-			cout << result << '\n';
 		}
 		else
 		{
-			MPI::COMM_WORLD.Send(result.get_str().c_str(), BUFFSIZE, MPI::CHAR, 0,
+			MPI::COMM_WORLD.Isend(result.get_str().c_str(), BUFFSIZE, MPI::CHAR, 0,
 				Dedekind::BIGINTTAG);
 		}
+
+		double timer2 = timer();
+		cout << "Rank: " << rank << ": " << result << " in "
+			  << timer2 - timer1 << "s\n";
 
 		// cout << Dedekind::monotoneSubsets<DEDEKINDNUMBER>(rank, size) << '\n';
 	}
