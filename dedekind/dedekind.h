@@ -57,6 +57,11 @@ bool operator<=(std::bitset<size> lhs, std::bitset<size> const &rhs)
 
 namespace Dedekind
 {
+	enum
+	{
+		BIGINTTAG
+	};
+
 	namespace Internal
 	{
 		template <size_t size>
@@ -105,9 +110,10 @@ namespace Dedekind
 	}
 
 	template <size_t size>
-	size_t enumerate(std::vector<std::bitset<size>> const &dn)
+	mpz_class enumerate(std::vector<std::bitset<size>> const &dn,
+			size_t rank = 0, size_t nprocs = 1)
 	{
-		size_t result = 0;
+		mpz_class result = 0;
 
 		std::unordered_map<std::bitset<size>, std::bitset<size>> duals;
 		std::unordered_map<std::bitset<size>, size_t> etas;
@@ -121,8 +127,8 @@ namespace Dedekind
 
 		std::cerr << "Preprocessing complete\n";
 
-		#pragma omp parallel for reduction(+:result) shared(dn) schedule(static, 1)
-		for (size_t idx1 = 0; idx1 < dn.size(); ++idx1)
+		// #pragma omp parallel for reduction(+:result) shared(dn) schedule(static, 1)
+		for (size_t idx1 = rank; idx1 < dn.size(); idx1 += nprocs)
 		{
 			for (auto iter2 = dn.begin(); iter2 != dn.end(); ++iter2)
 			{
@@ -131,6 +137,7 @@ namespace Dedekind
 						* etas[duals[iter] & duals[*iter2]];
 			}
 		}
+
 		return result;
 	}
 
@@ -198,9 +205,16 @@ namespace Dedekind
 	}
 
 	template<size_t Number>
-	size_t monotoneSubsets()
+	mpz_class monotoneSubsets(size_t rank = 0, size_t size = 1)
 	{
-		return enumerate(Internal::MonotoneSubsets<Number - 2>::result);
+		// no need to do this if (rank == 0) and then Bcast it because the other
+		// threads will not do anything anyway
+		auto tmp = Internal::MonotoneSubsets<Number - 2>::result;
+		// MPI::Comm::Bcast(&tmp, .. )
+
+    	mpz_class result = enumerate(tmp, rank, size);
+
+    	return result;
 	}
 }
 

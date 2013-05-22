@@ -1,6 +1,8 @@
 
 #include "main.ih"
 
+#define DEDEKINDNUMBER 7
+#define BUFFSIZE 32
 
 /*
 template <typename T, typename Alloc>
@@ -140,7 +142,7 @@ int main(int argc, char **argv)
 	{
 		rank = MPI::COMM_WORLD.Get_rank();
 		size = MPI::COMM_WORLD.Get_size();
-		std::cout << "I am " << rank << " of " << size << '\n';
+		// cout << "I am " << rank << " of " << size << '\n';
 	}
 	catch (MPI::Exception e)
 	{
@@ -148,9 +150,35 @@ int main(int argc, char **argv)
 			  << " - " << e.Get_error_string() << endl;
 	}
 
+
 	if (argc == 2 && argv[1][0] == 'b')
 	{
-		cout << Dedekind::monotoneSubsets<7>() << '\n';
+		mpz_class result = Dedekind::monotoneSubsets<DEDEKINDNUMBER>(rank, size);
+
+		cout << "process: " << rank << ": " << result << '\n';
+		if (rank == 0)
+		{
+			size_t toReceive = size - 1;
+			char buffer[BUFFSIZE];
+			while (toReceive--)
+			{
+				MPI::Status status;
+				MPI::COMM_WORLD.Recv(buffer, BUFFSIZE, MPI::CHAR, MPI::ANY_SOURCE,
+						Dedekind::BIGINTTAG, status);
+
+				mpz_class tmp(buffer);
+				result += tmp;
+			}
+
+			cout << result << '\n';
+		}
+		else
+		{
+			MPI::COMM_WORLD.Send(result.get_str().c_str(), BUFFSIZE, MPI::CHAR, 0,
+				Dedekind::BIGINTTAG);
+		}
+
+		// cout << Dedekind::monotoneSubsets<DEDEKINDNUMBER>(rank, size) << '\n';
 	}
 	else
 	{
