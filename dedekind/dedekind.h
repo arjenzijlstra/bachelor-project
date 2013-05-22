@@ -11,6 +11,11 @@
 
 #include <gmpxx.h> // for big numbers
 
+#define PREPROCESSING 1
+#define PRAGMAOMP 0
+#define DYNAMIC 0
+#define ONTHESPOT 0
+
 class BitSetLess
 {
 	public:
@@ -31,7 +36,7 @@ std::ostream &operator<<(std::ostream &out,
 			iter != rhs.end();
 				++iter)
 	{
-		out << ((iter != rhs.begin()) ? ", " : "") << *iter;
+		out << ((iter != rhs.begin()) ? ",\n" : "") << *iter;
 	}
 	out << '}';
 
@@ -112,27 +117,32 @@ namespace Dedekind
 	mpz_class enumerate(std::vector<std::bitset<size>> const &dn,
 			size_t rank = 0, size_t nprocs = 1)
 	{
-		mpz_class result = 0;
-
 		std::unordered_map<std::bitset<size>, std::bitset<size>> duals;
 		std::unordered_map<std::bitset<size>, size_t> etas;
 
-//*		// Preprocess duals and eta's of all elements
+#if PREPROCESSING
+		// Preprocess duals and eta's of all elements
 		for (size_t idx = 0; idx < dn.size(); ++idx)
 		{
 			duals[dn[idx]] = Internal::dual(dn[idx]);
 			etas[dn[idx]] = Internal::eta(dn[idx], dn);
 		}
-//*/
 		std::cerr << "Preprocessing complete\n";
-
-		// #pragma omp parallel for reduction(+:result) shared(dn) schedule(static, 1)
+#endif
+#if PRAGMAOMP
+		// fix the reduction
+		size_t result = 0;
+		#pragma omp parallel for reduction(+:result) shared(dn) schedule(static, 1)
+#else
+		mpz_class result = 0;
+#endif
 		for (size_t idx1 = rank; idx1 < dn.size(); idx1 += nprocs)
 		{
 			for (auto iter2 = dn.begin(); iter2 != dn.end(); ++iter2)
 			{
 				auto iter(dn[idx1]);
-/*
+
+#if DYNAMIC
 				auto tmp = iter & *iter2;
 				size_t first;
 				if (etas.find(tmp) == etas.end())
@@ -179,18 +189,23 @@ namespace Dedekind
 					second = etas[tmp2];
 				}
 				result += first * second;
-//*/
-
-
-				// result += Internal::eta(iter & *iter2, dn)
-				// 		 * Internal::eta(Internal::dual(iter) & Internal::dual(*iter2), dn);
+#endif
+#if ONTHESPOT
+				result += Internal::eta(iter & *iter2, dn)
+						 * Internal::eta(Internal::dual(iter) & Internal::dual(*iter2), dn);
+#endif
+#if PREPROCESSING
 				result += etas[iter & *iter2]
 						  * etas[duals[iter] & duals[*iter2]];
-
+#endif
 			}
 		}
 
+#if PRAGMAOMP
+		return mpz_class(result);
+#else
 		return result;
+#endif
 	}
 
 	template <size_t size>
