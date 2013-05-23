@@ -23,7 +23,7 @@ class BitSetLess
 		bool operator()(std::bitset<size> const &lhs,
 				std::bitset<size> const &rhs) const
 		{
-			return lhs.to_ulong() < rhs.to_ulong();
+			return lhs.to_ulong() > rhs.to_ulong();
 		}
 };
 
@@ -68,6 +68,124 @@ namespace Dedekind
 
 	namespace Internal
 	{
+		bool powersetLess(std::set<size_t> const &lhs,
+				std::set<size_t> const &rhs)
+		{
+			if (lhs.size() != 0 && rhs.size() != 0)
+			{
+				auto iter2 = rhs.rbegin();
+				for (auto iter = lhs.rbegin(); iter != lhs.rend(); ++iter)
+				{
+					if (iter2 == rhs.rend())
+					{
+						break;
+					}
+					if (*iter != *iter2)
+					{
+						return *iter < *iter2;
+					}
+					++iter2;
+				}
+				return lhs.size() < rhs.size();
+			}
+		/*
+			if (lhs.size() == rhs.size())
+			{
+				for (auto iter = lhs.begin(), iter2 = rhs.begin(); iter != lhs.end();
+						++iter, ++iter2)
+				{
+					if (*iter != *iter2)
+					{
+						return *iter < *iter2;
+					}
+				}
+			}
+		//*/
+			return lhs.size() < rhs.size();
+		}
+
+		void powersetRec(std::vector<std::set<size_t>> &result,
+							  std::set<size_t> current, size_t const n)
+		{
+			if (n == 0)
+			{
+				result.push_back(current);
+				return;
+			}
+
+			size_t newN(n - 1);
+			powersetRec(result, current, newN);
+			current.insert(newN);
+			powersetRec(result, current, newN);
+		}
+
+		template <size_t size>
+		std::array<std::set<size_t>, size> powerset(size_t const n)
+		{
+			std::vector<std::set<size_t>> tmpResult;
+			std::set<size_t> current;
+			powersetRec(tmpResult, current, n);
+			std::sort(tmpResult.begin(), tmpResult.end(), powersetLess);
+
+			std::array<std::set<size_t>, size> result;
+			std::copy(tmpResult.begin(), tmpResult.end(), result.begin());
+
+			return result;
+		}
+
+		template <size_t size>
+		std::set<size_t> permute(std::array<size_t, size> const &permutation,
+				std::set<size_t> const &elem)
+		{
+			std::set<size_t> result;
+			for (auto iter = elem.begin(); iter != elem.end(); ++iter)
+			{
+				result.insert(permutation[*iter]);
+			}
+			return result;
+		}
+
+		template <size_t size>
+		std::bitset<size> permute(std::array<size_t, size> const &permutation,
+				std::bitset<size> const &elem)
+		{
+			std::bitset<size> result;
+			for (size_t idx = 0; idx != result.size(); ++idx)
+			{
+				result[idx] = elem[permutation[idx]];
+			}
+			return result;
+		}
+
+		template <size_t size, size_t size2>
+		std::array<size_t, size2> mbfPermutation(
+				std::array<size_t, size> const &permutation,
+				std::array<std::set<size_t>, size2> const &ps)
+		{
+			std::array<size_t, size2> result;
+			size_t idx = 0;
+			for (auto iter = ps.begin(); iter != ps.end(); ++iter)
+			{
+				std::set<size_t> tmp = permute(permutation, *iter);
+				result[idx++] = find(ps.begin(), ps.end(), tmp) - ps.begin();
+			}
+			return result;
+		}
+
+		template <size_t size>
+		std::set<std::bitset<size>, BitSetLess> permutations(
+				std::bitset<size> const &bs,
+				std::vector<std::array<size_t, size>> const &perms)
+		{
+			std::set<std::bitset<size>, BitSetLess> result;
+			for (auto iter = perms.begin(); iter!= perms.end(); ++iter)
+			{
+				std::bitset<size> temp = permute(*iter, bs);
+				result.insert(temp);
+			}
+			return result;
+		}
+
 		template <size_t size>
 		std::bitset<size> reverse(std::bitset<size> const &bset)
 		{
@@ -113,14 +231,66 @@ namespace Dedekind
 		}
 	}
 
-	template <size_t size>
+	template <size_t N, size_t P>
+	std::vector<std::set<std::bitset<P>, BitSetLess>> generateRn(
+			std::vector<std::bitset<P>> const &dn)
+	{
+		std::array<size_t, N> permutation;
+		std::vector<std::array<size_t, N>> perms;
+
+		for (size_t idx = 0; idx != N; ++idx)
+		{
+			permutation[idx] = idx;
+		}
+
+		std::array<std::set<size_t>, P> powerSet = Internal::powerset<P>(N);
+
+		// std::cout << N << " " << powerSet << '\n';
+		std::vector<std::array<size_t, P>> mbfPermutations;
+		do
+		{
+			perms.push_back(permutation);
+			mbfPermutations.push_back(
+					Internal::mbfPermutation(permutation, powerSet));
+		}
+		while (std::next_permutation(permutation.begin(), permutation.end()));
+
+		std::vector<std::set<std::bitset<P>, BitSetLess>> rn;
+		std::set<std::bitset<P>, BitSetLess> processed;
+
+		size_t idx = 0;
+		// double timer1 = timer();
+
+		for (auto iter = dn.begin(); iter != dn.end(); ++iter)
+		{
+			if (processed.find(*iter) == processed.end())
+			{
+				auto permuted = Internal::permutations(*iter, mbfPermutations);
+				for (auto perm = permuted.begin(); perm != permuted.end(); ++perm)
+				{
+					processed.insert(*perm);
+				}
+
+				rn.push_back(permuted);
+				// cout << rn.size() << " " << idx << '\n';
+			}
+			++idx;
+		}
+		// double timer2 = timer();
+
+		// cout << rn.size() << " in: " << timer2 - timer1 << '\n';
+		return rn;
+	}
+
+	template <size_t size, typename Less>
 	mpz_class enumerate(std::vector<std::bitset<size>> const &dn,
+			std::vector<std::set<std::bitset<size>, Less>> const &rn,
 			size_t rank = 0, size_t nprocs = 1)
 	{
-		std::unordered_map<std::bitset<size>, std::bitset<size>> duals;
-		std::unordered_map<std::bitset<size>, size_t> etas;
+		std::map<std::bitset<size>, std::bitset<size>, BitSetLess> duals;
+		std::map<std::bitset<size>, size_t, BitSetLess> etas;
 
-#if PREPROCESSING
+#if 0
 		// Preprocess duals and eta's of all elements
 		for (size_t idx = 0; idx < dn.size(); ++idx)
 		{
@@ -129,21 +299,17 @@ namespace Dedekind
 		}
 		std::cerr << "Preprocessing complete\n";
 #endif
-#if PRAGMAOMP
-		// fix the reduction
-		size_t result = 0;
-		#pragma omp parallel for reduction(+:result) shared(dn) schedule(static, 1)
-#else
+
+		// #pragma omp parallel for reduction(+:result) shared(dn) schedule(static, 1)
 		mpz_class result = 0;
-#endif
-		for (size_t idx1 = rank; idx1 < dn.size(); idx1 += nprocs)
+		for (size_t idx = rank; idx < rn.size(); idx += nprocs)
 		{
+			auto iter(rn[idx].begin());
 			for (auto iter2 = dn.begin(); iter2 != dn.end(); ++iter2)
 			{
-				auto iter(dn[idx1]);
-
-#if DYNAMIC
-				auto tmp = iter & *iter2;
+				// auto iter(dn[idx1]);
+#if 1
+				auto tmp = *iter & *iter2;
 				size_t first;
 				if (etas.find(tmp) == etas.end())
 				{
@@ -156,14 +322,14 @@ namespace Dedekind
 				}
 
 				std::bitset<size> dual1;
-				if (duals.find(iter) == duals.end())
+				if (duals.find(*iter) == duals.end())
 				{
-					dual1 = Internal::dual(iter);
-					duals[iter] = dual1;
+					dual1 = Internal::dual(*iter);
+					duals[*iter] = dual1;
 				}
 				else
 				{
-					dual1 = duals[iter];
+					dual1 = duals[*iter];
 				}
 
 				std::bitset<size> dual2;
@@ -188,13 +354,12 @@ namespace Dedekind
 				{
 					second = etas[tmp2];
 				}
-				result += first * second;
+				result += rn[idx].size() * first * second;
+#else
+				result += rn[idx].size() * Internal::eta(*iter & *iter2, dn)
+						 * Internal::eta(Internal::dual(*iter) & Internal::dual(*iter2), dn);
 #endif
-#if ONTHESPOT
-				result += Internal::eta(iter & *iter2, dn)
-						 * Internal::eta(Internal::dual(iter) & Internal::dual(*iter2), dn);
-#endif
-#if PREPROCESSING
+#if 0
 				result += etas[iter & *iter2]
 						  * etas[duals[iter] & duals[*iter2]];
 #endif
@@ -209,7 +374,7 @@ namespace Dedekind
 	}
 
 	template <size_t size>
-	static std::vector<std::bitset<(size << 1)>> generate(
+	std::vector<std::bitset<(size << 1)>> generate(
 			std::vector<std::bitset<size>> const &m1)
 	{
 		std::vector<std::bitset<(size << 1)>> m2;
@@ -276,10 +441,12 @@ namespace Dedekind
 	{
 		// no need to do this if (rank == 0) and then Bcast it because the other
 		// threads will not do anything anyway
-		auto tmp = Internal::MonotoneSubsets<Number - 2>::result;
+		auto dn = Internal::MonotoneSubsets<Number - 2>::result;
 		// MPI::Comm::Bcast(&tmp, .. )
 
-    	mpz_class result = enumerate(tmp, rank, size);
+		auto rn = generateRn<Number - 2>(dn);
+
+    	mpz_class result = enumerate(dn, rn, rank, size);
 
     	return result;
 	}
