@@ -1,5 +1,7 @@
 *.o
 project
-nohup.out
+make.dep
 .DS_Store
 out.txt
+nohup.out
+
