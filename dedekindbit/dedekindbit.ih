@@ -1,7 +1,0 @@
-
-#include "dedekindbit.h"
-
-#include <parallel/algorithm>
-#include <iostream>
-
-using namespace std;

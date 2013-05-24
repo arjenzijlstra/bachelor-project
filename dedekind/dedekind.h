@@ -125,8 +125,9 @@ namespace Dedekind
 			std::vector<std::set<size_t>> tmpResult;
 			std::set<size_t> current;
 			powersetRec(tmpResult, current, n);
-			std::sort(tmpResult.begin(), tmpResult.end(), powersetLess);
 
+			// sort the powerset as needed and put it into an std::array
+			std::sort(tmpResult.begin(), tmpResult.end(), powersetLess);
 			std::array<std::set<size_t>, size> result;
 			std::copy(tmpResult.begin(), tmpResult.end(), result.begin());
 
@@ -215,7 +216,6 @@ namespace Dedekind
 					++result;
 				}
 			}
-
 			return result;
 		}
 
@@ -229,132 +229,100 @@ namespace Dedekind
 
 			return (tmp_lhs | tmp_rhs);
 		}
-	}
+	} // end namespace Internal
 
-	template <size_t N, size_t P>
-	std::vector<std::set<std::bitset<P>, BitSetLess>> generateRn(
-			std::vector<std::bitset<P>> const &dn)
+
+	template <size_t Number, size_t Power>
+	std::vector<std::vector<std::bitset<Power>>> generateRn(
+			std::vector<std::bitset<Power>> const &dn)
 	{
-		std::array<size_t, N> permutation;
-		std::vector<std::array<size_t, N>> perms;
+		std::array<size_t, Number> permutation;
 
-		for (size_t idx = 0; idx != N; ++idx)
+		for (size_t idx = 0; idx != Number; ++idx)
 		{
 			permutation[idx] = idx;
 		}
 
-		std::array<std::set<size_t>, P> powerSet = Internal::powerset<P>(N);
+		std::array<std::set<size_t>, Power> powerSet =
+				Internal::powerset<Power>(Number);
 
-		// std::cout << N << " " << powerSet << '\n';
-		std::vector<std::array<size_t, P>> mbfPermutations;
+		std::vector<std::array<size_t, Power>> mbfPermutations;
 		do
 		{
-			perms.push_back(permutation);
 			mbfPermutations.push_back(
 					Internal::mbfPermutation(permutation, powerSet));
 		}
 		while (std::next_permutation(permutation.begin(), permutation.end()));
 
-		std::vector<std::set<std::bitset<P>, BitSetLess>> rn;
-		std::set<std::bitset<P>, BitSetLess> processed;
-
-		size_t idx = 0;
-		// double timer1 = timer();
+		std::vector<std::vector<std::bitset<Power>>> rn;
+		std::set<std::bitset<Power>, BitSetLess> processed;
 
 		for (auto iter = dn.begin(); iter != dn.end(); ++iter)
 		{
 			if (processed.find(*iter) == processed.end())
 			{
 				auto permuted = Internal::permutations(*iter, mbfPermutations);
+				std::vector<std::bitset<Power>> vecPermuted;
+				copy(permuted.begin(), permuted.end(), std::back_inserter(vecPermuted));
 				for (auto perm = permuted.begin(); perm != permuted.end(); ++perm)
 				{
 					processed.insert(*perm);
 				}
 
-				rn.push_back(permuted);
-				// cout << rn.size() << " " << idx << '\n';
+				rn.push_back(vecPermuted);
 			}
-			++idx;
 		}
-		// double timer2 = timer();
 
-		// cout << rn.size() << " in: " << timer2 - timer1 << '\n';
+		for (auto iter = rn.begin(); iter != rn.end(); ++iter)
+		{
+			//std::sort((*iter).begin(), (*iter).end(), BitSetLess);
+		}
+
 		return rn;
 	}
 
-	template <size_t size, typename Less>
+	template <size_t size>
 	mpz_class enumerate(std::vector<std::bitset<size>> const &dn,
-			std::vector<std::set<std::bitset<size>, Less>> const &rn,
+			std::vector<std::vector<std::bitset<size>>> const &rn,
 			size_t rank = 0, size_t nprocs = 1)
 	{
 		std::map<std::bitset<size>, std::bitset<size>, BitSetLess> duals;
 		std::map<std::bitset<size>, size_t, BitSetLess> etas;
 
-#if 0
 		// Preprocess duals and eta's of all elements
-		for (size_t idx = 0; idx < dn.size(); ++idx)
+		for (auto iter = rn.begin(); iter != rn.end(); ++iter)
 		{
-			duals[dn[idx]] = Internal::dual(dn[idx]);
-			etas[dn[idx]] = Internal::eta(dn[idx], dn);
+			auto elem = (*iter).begin();
+			size_t tmp = Internal::eta(*elem, dn);
+			for (; elem != (*iter).end(); ++elem)
+			{
+				etas[*elem] = tmp;
+				duals[*elem] = Internal::dual(*elem);
+			}
 		}
-		std::cerr << "Preprocessing complete\n";
-#endif
 
-		// #pragma omp parallel for reduction(+:result) shared(dn) schedule(static, 1)
+		std::cerr << rank << ": Preprocessing complete.\n";
+
 		mpz_class result = 0;
+		// #pragma omp parallel for reduction(+:result) shared(dn) schedule(static, 1)
 		for (size_t idx = rank; idx < rn.size(); idx += nprocs)
 		{
+			size_t counter = 0;
 			auto iter(rn[idx].begin());
+			//std::cout << idx << '\n';
 			for (auto iter2 = dn.begin(); iter2 != dn.end(); ++iter2)
 			{
-				// auto iter(dn[idx1]);
 #if 1
-				auto tmp = *iter & *iter2;
-				size_t first;
-				if (etas.find(tmp) == etas.end())
-				{
-					first = Internal::eta(tmp, dn);
-					etas[tmp] = first;
-				}
-				else
-				{
-					first = etas[tmp];
-				}
+				auto first = *iter & *iter2;
+				auto second = duals[*iter] & duals[*iter2];
 
-				std::bitset<size> dual1;
-				if (duals.find(*iter) == duals.end())
-				{
-					dual1 = Internal::dual(*iter);
-					duals[*iter] = dual1;
-				}
-				else
-				{
-					dual1 = duals[*iter];
-				}
+				result += rn[idx].size() * etas[first] * etas[second];
 
-				std::bitset<size> dual2;
-				if (duals.find(*iter2) == duals.end())
+				if (counter % 10000 == 0)
 				{
-					dual2 = Internal::dual(*iter2);
-					duals[*iter2] = dual2;
+					std::cerr << counter << " " << result << '\n';
 				}
-				else
-				{
-					dual2 = duals[*iter2];
-				}
-
-				auto tmp2 = dual1 & dual2;
-				size_t second;
-				if (etas.find(tmp2) == etas.end())
-				{
-					second = Internal::eta(tmp2, dn);
-					etas[tmp2] = second;
-				}
-				else
-				{
-					second = etas[tmp2];
-				}
-				result += rn[idx].size() * first * second;
+				++counter;
 #else
 				result += rn[idx].size() * Internal::eta(*iter & *iter2, dn)
 						 * Internal::eta(Internal::dual(*iter) & Internal::dual(*iter2), dn);
@@ -366,11 +334,7 @@ namespace Dedekind
 			}
 		}
 
-#if PRAGMAOMP
-		return mpz_class(result);
-#else
 		return result;
-#endif
 	}
 
 	template <size_t size>
@@ -440,11 +404,21 @@ namespace Dedekind
 	mpz_class monotoneSubsets(size_t rank = 0, size_t size = 1)
 	{
 		// no need to do this if (rank == 0) and then Bcast it because the other
-		// threads will not do anything anyway
+		// threads will just wait for it anyway
 		auto dn = Internal::MonotoneSubsets<Number - 2>::result;
 		// MPI::Comm::Bcast(&tmp, .. )
 
+		if (rank == 0)
+		{
+			std::cerr << "Done generating D. Total size: " << dn.size() << '\n';
+		}
+
 		auto rn = generateRn<Number - 2>(dn);
+
+		if (rank == 0)
+		{
+			std::cerr << "Done generating R. Total size: " << rn.size() << '\n';
+		}
 
     	mpz_class result = enumerate(dn, rn, rank, size);
 

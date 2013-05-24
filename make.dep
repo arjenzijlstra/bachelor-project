@@ -1,0 +1,52 @@
+main.o: main.cpp main.ih \
+ /cm/shared/apps/openmpi/gcc/64/1.4.5/include/mpi.h \
+ /cm/shared/apps/openmpi/gcc/64/1.4.5/include/openmpi/ompi/mpi/cxx/mpicxx.h \
+ /cm/shared/apps/openmpi/gcc/64/1.4.5/include/openmpi/ompi/mpi/cxx/constants.h \
+ /cm/shared/apps/openmpi/gcc/64/1.4.5/include/openmpi/ompi/mpi/cxx/functions.h \
+ /cm/shared/apps/openmpi/gcc/64/1.4.5/include/openmpi/ompi/mpi/cxx/datatype.h \
+ /cm/shared/apps/openmpi/gcc/64/1.4.5/include/openmpi/ompi/mpi/cxx/exception.h \
+ /cm/shared/apps/openmpi/gcc/64/1.4.5/include/openmpi/ompi/mpi/cxx/op.h \
+ /cm/shared/apps/openmpi/gcc/64/1.4.5/include/openmpi/ompi/mpi/cxx/status.h \
+ /cm/shared/apps/openmpi/gcc/64/1.4.5/include/openmpi/ompi/mpi/cxx/request.h \
+ /cm/shared/apps/openmpi/gcc/64/1.4.5/include/openmpi/ompi/mpi/cxx/group.h \
+ /cm/shared/apps/openmpi/gcc/64/1.4.5/include/openmpi/ompi/mpi/cxx/comm.h \
+ /cm/shared/apps/openmpi/gcc/64/1.4.5/include/openmpi/ompi/mpi/cxx/win.h \
+ /cm/shared/apps/openmpi/gcc/64/1.4.5/include/openmpi/ompi/mpi/cxx/file.h \
+ /cm/shared/apps/openmpi/gcc/64/1.4.5/include/openmpi/ompi/mpi/cxx/errhandler.h \
+ /cm/shared/apps/openmpi/gcc/64/1.4.5/include/openmpi/ompi/mpi/cxx/intracomm.h \
+ /cm/shared/apps/openmpi/gcc/64/1.4.5/include/openmpi/ompi/mpi/cxx/topology.h \
+ /cm/shared/apps/openmpi/gcc/64/1.4.5/include/openmpi/ompi/mpi/cxx/intercomm.h \
+ /cm/shared/apps/openmpi/gcc/64/1.4.5/include/openmpi/ompi/mpi/cxx/info.h \
+ /cm/shared/apps/openmpi/gcc/64/1.4.5/include/openmpi/ompi/mpi/cxx/datatype_inln.h \
+ /cm/shared/apps/openmpi/gcc/64/1.4.5/include/openmpi/ompi/mpi/cxx/functions_inln.h \
+ /cm/shared/apps/openmpi/gcc/64/1.4.5/include/openmpi/ompi/mpi/cxx/request_inln.h \
+ /cm/shared/apps/openmpi/gcc/64/1.4.5/include/openmpi/ompi/mpi/cxx/comm_inln.h \
+ /cm/shared/apps/openmpi/gcc/64/1.4.5/include/openmpi/ompi/mpi/cxx/intracomm_inln.h \
+ /cm/shared/apps/openmpi/gcc/64/1.4.5/include/openmpi/ompi/mpi/cxx/topology_inln.h \
+ /cm/shared/apps/openmpi/gcc/64/1.4.5/include/openmpi/ompi/mpi/cxx/intercomm_inln.h \
+ /cm/shared/apps/openmpi/gcc/64/1.4.5/include/openmpi/ompi/mpi/cxx/group_inln.h \
+ /cm/shared/apps/openmpi/gcc/64/1.4.5/include/openmpi/ompi/mpi/cxx/op_inln.h \
+ /cm/shared/apps/openmpi/gcc/64/1.4.5/include/openmpi/ompi/mpi/cxx/errhandler_inln.h \
+ /cm/shared/apps/openmpi/gcc/64/1.4.5/include/openmpi/ompi/mpi/cxx/status_inln.h \
+ /cm/shared/apps/openmpi/gcc/64/1.4.5/include/openmpi/ompi/mpi/cxx/info_inln.h \
+ /cm/shared/apps/openmpi/gcc/64/1.4.5/include/openmpi/ompi/mpi/cxx/win_inln.h \
+ /cm/shared/apps/openmpi/gcc/64/1.4.5/include/openmpi/ompi/mpi/cxx/file_inln.h \
+ dedekindint/dedekindint.h dedekind/dedekind.h
+concatenate.o: dedekindint/concatenate.cpp dedekindint/dedekindint.ih \
+ dedekindint/dedekindint.h
+generate.o: dedekindint/generate.cpp dedekindint/dedekindint.ih \
+ dedekindint/dedekindint.h
+monotoneSubsets.o: dedekindint/monotoneSubsets.cpp \
+ dedekindint/dedekindint.ih dedekindint/dedekindint.h
+operatorboolsetless.o: dedekindint/operatorboolsetless.cpp \
+ dedekindint/dedekindint.ih dedekindint/dedekindint.h
+operatorboolsetsetless.o: dedekindint/operatorboolsetsetless.cpp \
+ dedekindint/dedekindint.ih dedekindint/dedekindint.h
+operatorinsertMonotoneSubsets.o: \
+ dedekindint/operatorinsertMonotoneSubsets.cpp dedekindint/dedekindint.ih \
+ dedekindint/dedekindint.h
+operatorinsertset.o: dedekindint/operatorinsertset.cpp \
+ dedekindint/dedekindint.ih dedekindint/dedekindint.h
+operatorinsertSetOfMonontoneSubsets.o: \
+ dedekindint/operatorinsertSetOfMonontoneSubsets.cpp \
+ dedekindint/dedekindint.ih dedekindint/dedekindint.h

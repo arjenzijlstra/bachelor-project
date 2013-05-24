@@ -1,7 +1,7 @@
 
 #include "main.ih"
 
-#define DEDEKINDNUMBER 8
+#define DEDEKINDNUMBER 7
 #define BUFFSIZE 32
 
 
