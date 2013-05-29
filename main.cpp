@@ -2,7 +2,6 @@
 #include "main.ih"
 
 #define DEDEKINDNUMBER 7
-#define BUFFSIZE 32
 
 
 static double timer(void)
@@ -43,41 +42,12 @@ int main(int argc, char **argv)
 	MPI::Init(argc, argv);
 	MPI::COMM_WORLD.Set_errhandler(MPI::ERRORS_THROW_EXCEPTIONS);
 
-
-
-	UInt128 test1 = UInt128(pow(2, 63), 100000000);
-
-	test1 += pow(2, 63);
-	test1 += pow(2, 63);
-	test1 += pow(2, 63);
-	test1 += pow(2, 63);
-
-	test1 += pow(2, 63);
-	test1 += pow(2, 63);
-	test1 += pow(2, 63);
-	test1 += pow(2, 63);
-
-	test1 += pow(2, 63);
-	test1 += pow(2, 63);
-	test1 += pow(2, 63);
-	test1 += pow(2, 63);
-
-	cout << test1 << '\n';
-
-	UInt128 test2;
-	test2 += pow(2, 63);
-	test2 += pow(2, 63);
-	test2 += pow(2, 63);
-
-	cout << test1 + test2 << '\n';
-
 	size_t rank = 0;
 	size_t size = 1;
 	try
 	{
 		rank = MPI::COMM_WORLD.Get_rank();
 		size = MPI::COMM_WORLD.Get_size();
-		// cout << "I am " << rank << " of " << size << '\n';
 	}
 	catch (MPI::Exception e)
 	{
@@ -86,37 +56,64 @@ int main(int argc, char **argv)
 	}
 
 
-	if (argc == 2 && argv[1][0] == 'b')
+	if (argc == 3 && string(argv[1]) == "-b")
 	{
+		size_t n = 2;
+		stringstream ss(argv[2]);
+		ss >> n;
+
 		double timer1 = timer();
 
-		mpz_class result = Dedekind::monotoneSubsets<DEDEKINDNUMBER>(rank, size);
+		Dedekind::UInt128 result;
+		switch (n)
+		{
+			// case 3:
+			// 	result = Dedekind::monotoneSubsets<3>(rank, size);
+			// 	break;
+			// case 4:
+			// 	result = Dedekind::monotoneSubsets<4>(rank, size);
+			// 	break;
+			// case 5:
+			// 	result = Dedekind::monotoneSubsets<5>(rank, size);
+			// 	break;
+			case 6:
+				result = Dedekind::monotoneSubsets<6>(rank, size);
+				break;
+			case 7:
+				result = Dedekind::monotoneSubsets<7>(rank, size);
+				break;
+			case 8:
+				result = Dedekind::monotoneSubsets<8>(rank, size);
+		}
+
 
 		if (rank == 0)
 		{
 			size_t toReceive = size - 1;
-			char buffer[BUFFSIZE];
 			while (toReceive--)
 			{
-				MPI::Status status;
-				MPI::COMM_WORLD.Recv(buffer, BUFFSIZE, MPI::CHAR, MPI::ANY_SOURCE,
-						Dedekind::BIGINTTAG, status);
+				uint_fast64_t lohi[2];
 
-				mpz_class tmp(buffer);
+				MPI::Status status;
+				MPI::COMM_WORLD.Recv(lohi, 2, MPI::UNSIGNED_LONG,
+						MPI::ANY_SOURCE, Dedekind::BIGINTTAG, status);
+
+				Dedekind::UInt128 tmp(lohi[0], lohi[1]);
 				result += tmp;
 			}
 		}
 		else
 		{
-			MPI::COMM_WORLD.Isend(result.get_str().c_str(), BUFFSIZE, MPI::CHAR, 0,
-				Dedekind::BIGINTTAG);
+			uint_fast64_t lohi[2];
+			lohi[0] = result.lo();
+			lohi[1] = result.hi();
+			MPI::COMM_WORLD.Send(&lohi, 2, MPI::UNSIGNED_LONG, 0,
+					Dedekind::BIGINTTAG);
 		}
 
 		double timer2 = timer();
 		cout << "Rank: " << rank << ": " << result << " in "
 			  << timer2 - timer1 << "s\n";
-
-		// cout << Dedekind::monotoneSubsets<DEDEKINDNUMBER>(rank, size) << '\n';
 	}
 	else
 	{
