@@ -43,6 +43,34 @@ int main(int argc, char **argv)
 	MPI::Init(argc, argv);
 	MPI::COMM_WORLD.Set_errhandler(MPI::ERRORS_THROW_EXCEPTIONS);
 
+
+
+	UInt128 test1 = UInt128(pow(2, 63), 100000000);
+
+	test1 += pow(2, 63);
+	test1 += pow(2, 63);
+	test1 += pow(2, 63);
+	test1 += pow(2, 63);
+
+	test1 += pow(2, 63);
+	test1 += pow(2, 63);
+	test1 += pow(2, 63);
+	test1 += pow(2, 63);
+
+	test1 += pow(2, 63);
+	test1 += pow(2, 63);
+	test1 += pow(2, 63);
+	test1 += pow(2, 63);
+
+	cout << test1 << '\n';
+
+	UInt128 test2;
+	test2 += pow(2, 63);
+	test2 += pow(2, 63);
+	test2 += pow(2, 63);
+
+	cout << test1 + test2 << '\n';
+
 	size_t rank = 0;
 	size_t size = 1;
 	try
