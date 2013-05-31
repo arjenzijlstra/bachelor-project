@@ -9,9 +9,9 @@
 #include <algorithm>
 #include <omp.h>
 
-#include <gmpxx.h> // for big numbers
+//#include <gmpxx.h> // for big numbers
 
-//#include "../uint128/uint128.h"
+#include "../uint128/uint128.h"
 
 #define PREPROCESSING 1
 #define PRAGMAOMP 0
@@ -284,7 +284,7 @@ namespace Dedekind
 	}
 
 	template <size_t size>
-	mpz_class enumerate(std::vector<std::bitset<size>> const &dn,
+	UInt128 enumerate(std::vector<std::bitset<size>> const &dn,
 			std::vector<std::vector<std::bitset<size>>> const &rn,
 			size_t rank = 0, size_t nprocs = 1)
 	{
@@ -305,31 +305,23 @@ namespace Dedekind
 
 		std::cerr << rank << ": Preprocessing complete.\n";
 
-		mpz_class result(0);
+		UInt128 result(0);
 		// #pragma omp parallel for reduction(+:result) shared(dn) schedule(static, 1)
 		for (size_t idx = rank; idx < rn.size(); idx += nprocs)
 		{
-			size_t counter = 0;
 			auto iter(rn[idx].begin());
-			std::cerr << rank << ": " << idx << std::endl;
+			// std::cerr << rank << ": " << idx << std::endl;
 			for (auto iter2 = dn.begin(); iter2 != dn.end(); ++iter2)
 			{
-#if 1
 				auto first = *iter & *iter2;
 				auto second = duals[*iter] & duals[*iter2];
 
 				result += rn[idx].size() * etas[first] * etas[second];
 
-				if (counter % 10000 == 0)
-				{
-					//std::cerr << counter << " " << result << '\n';
-				}
-				++counter;
-#else
+#if 0
 				result += rn[idx].size() * Internal::eta(*iter & *iter2, dn)
 						 * Internal::eta(Internal::dual(*iter) & Internal::dual(*iter2), dn);
-#endif
-#if 0
+
 				result += etas[iter & *iter2]
 						  * etas[duals[iter] & duals[*iter2]];
 #endif
@@ -403,12 +395,11 @@ namespace Dedekind
 	}
 
 	template<size_t Number>
-	mpz_class monotoneSubsets(size_t rank = 0, size_t size = 1)
+	UInt128 monotoneSubsets(size_t rank = 0, size_t size = 1)
 	{
-		// no need to do this if (rank == 0) and then Bcast it because the other
+		// no need to do this in one thread and then Bcast it because the other
 		// threads will just wait for it anyway
 		auto dn = Internal::MonotoneSubsets<Number - 2>::result;
-		// MPI::Comm::Bcast(&tmp, .. )
 
 		if (rank == 0)
 		{
@@ -422,7 +413,7 @@ namespace Dedekind
 			std::cerr << "Done generating R. Total size: " << rn.size() << '\n';
 		}
 
-    	mpz_class result = enumerate(dn, rn, rank, size);
+    	UInt128 result = enumerate(dn, rn, rank, size);
 
     	return result;
 	}

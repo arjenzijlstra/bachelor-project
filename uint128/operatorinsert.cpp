@@ -7,6 +7,7 @@ namespace Dedekind
 {
 	std::ostream &operator<<(std::ostream &out, UInt128 const &uint128)
 	{
+		// **** WRONG ****
 		// // get current precision, set to fixed 0, print, set back to default
 		// streamsize old = cout.precision();
 		// out.precision(0);
@@ -15,6 +16,7 @@ namespace Dedekind
 
 		// out.unsetf(ios_base::floatfield);
 		// out.precision(old);
+		// **** WRONG ****
 
 
 		size_t d[39] = {0}; // a 128 bit number has at most 39 digits
