@@ -1,9 +1,6 @@
 
 #include "main.ih"
 
-#define DEDEKINDNUMBER 7
-
-
 static double timer(void)
 {
 	struct timeval tm;
