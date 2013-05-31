@@ -9,9 +9,9 @@
 #include <algorithm>
 #include <omp.h>
 
-//#include <gmpxx.h> // for big numbers
+#include <gmpxx.h> // for big numbers
 
-#include "../uint128/uint128.h"
+//#include "../uint128/uint128.h"
 
 #define PREPROCESSING 1
 #define PRAGMAOMP 0
@@ -284,7 +284,7 @@ namespace Dedekind
 	}
 
 	template <size_t size>
-	UInt128 enumerate(std::vector<std::bitset<size>> const &dn,
+	mpz_class enumerate(std::vector<std::bitset<size>> const &dn,
 			std::vector<std::vector<std::bitset<size>>> const &rn,
 			size_t rank = 0, size_t nprocs = 1)
 	{
@@ -305,13 +305,13 @@ namespace Dedekind
 
 		std::cerr << rank << ": Preprocessing complete.\n";
 
-		UInt128 result(0);
+		mpz_class result(0);
 		// #pragma omp parallel for reduction(+:result) shared(dn) schedule(static, 1)
 		for (size_t idx = rank; idx < rn.size(); idx += nprocs)
 		{
 			size_t counter = 0;
 			auto iter(rn[idx].begin());
-			//std::cout << idx << '\n';
+			std::cerr << rank << ": " << idx << std::endl;
 			for (auto iter2 = dn.begin(); iter2 != dn.end(); ++iter2)
 			{
 #if 1
@@ -403,7 +403,7 @@ namespace Dedekind
 	}
 
 	template<size_t Number>
-	UInt128 monotoneSubsets(size_t rank = 0, size_t size = 1)
+	mpz_class monotoneSubsets(size_t rank = 0, size_t size = 1)
 	{
 		// no need to do this if (rank == 0) and then Bcast it because the other
 		// threads will just wait for it anyway
@@ -422,7 +422,7 @@ namespace Dedekind
 			std::cerr << "Done generating R. Total size: " << rn.size() << '\n';
 		}
 
-    	UInt128 result = enumerate(dn, rn, rank, size);
+    	mpz_class result = enumerate(dn, rn, rank, size);
 
     	return result;
 	}

@@ -64,7 +64,8 @@ int main(int argc, char **argv)
 
 		double timer1 = timer();
 
-		Dedekind::UInt128 result;
+		//Dedekind::UInt128 result;
+		mpz_class result = 0;
 		switch (n)
 		{
 			// case 3:
@@ -89,26 +90,26 @@ int main(int argc, char **argv)
 
 		if (rank == 0)
 		{
-			size_t toReceive = size - 1;
-			while (toReceive--)
-			{
-				uint_fast64_t lohi[2];
+			// size_t toReceive = size - 1;
+			// while (toReceive--)
+			// {
+			// 	uint_fast64_t lohi[2];
 
-				MPI::Status status;
-				MPI::COMM_WORLD.Recv(lohi, 2, MPI::UNSIGNED_LONG,
-						MPI::ANY_SOURCE, Dedekind::BIGINTTAG, status);
+			// 	MPI::Status status;
+			// 	MPI::COMM_WORLD.Recv(lohi, 2, MPI::UNSIGNED_LONG,
+			// 			MPI::ANY_SOURCE, Dedekind::BIGINTTAG, status);
 
-				Dedekind::UInt128 tmp(lohi[0], lohi[1]);
-				result += tmp;
-			}
+			// 	Dedekind::UInt128 tmp(lohi[0], lohi[1]);
+			// 	result += tmp;
+			// }
 		}
 		else
 		{
-			uint_fast64_t lohi[2];
-			lohi[0] = result.lo();
-			lohi[1] = result.hi();
-			MPI::COMM_WORLD.Send(&lohi, 2, MPI::UNSIGNED_LONG, 0,
-					Dedekind::BIGINTTAG);
+			// uint_fast64_t lohi[2];
+			// lohi[0] = result.lo();
+			// lohi[1] = result.hi();
+			// MPI::COMM_WORLD.Send(&lohi, 2, MPI::UNSIGNED_LONG, 0,
+			// 		Dedekind::BIGINTTAG);
 		}
 
 		double timer2 = timer();

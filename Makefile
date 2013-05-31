@@ -2,8 +2,8 @@
 # use g++ 4.7 together with C++11 as standard
 #CC = g++
 CC = mpic++
-CFLAGS = --std=c++0x -Wall -Wextra -pedantic -fopenmp -O2 -g
-LDFLAGS = -fopenmp -lgmpxx -lgmp --enable-cxx-exceptions
+CFLAGS = --std=c++0x -Wall -Wextra -pedantic -O2 -g
+LDFLAGS = -lgmpxx -lgmp #--enable-cxx-exceptions
 
 SOURCES = $(wildcard *.cpp */*.cpp)
 OBJECTS = $(SOURCES:.cpp=.o)
