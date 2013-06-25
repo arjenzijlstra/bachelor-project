@@ -13,8 +13,7 @@ Dedekind::setOfMonotoneSubsets Dedekind::generate(
 		{
 			if (*iter <= *iter2)
 			{
-				monotoneSubset tmp =
-						Internal::concatenate(*iter, *iter2, n);
+				monotoneSubset tmp = Internal::concatenate(*iter, *iter2, n);
 				m2.push_back(tmp);
 				++mn;
 			}

@@ -6,7 +6,7 @@
 #include <algorithm>
 #include <iostream>
 
-#if 0  // chose for standard or own implementation
+#if 1  // chose for standard or own implementation
 
 #define SetLess std::less<std::set<size_t>>
 
@@ -21,7 +21,7 @@ class SetLess
 
 #endif
 
-#if 0  // chose for standard or own implementation
+#if 1  // chose for standard or own implementation
 
 #define SetSetLess std::less<std::set<std::set<size_t>, SetLess>>
 
@@ -55,6 +55,17 @@ bool operator<=(std::set<Type, Less> const &lhs,
 	return std::includes(rhs.begin(), rhs.end(), lhs.begin(), lhs.end());
 }
 
+template <typename Type>
+bool operator<=(std::vector<Type> const &lhs,
+	std::vector<Type> const &rhs)
+{
+	for (auto iter = lhs.begin(); iter != lhs.end(); ++iter)
+	{
+		if (std::find(rhs.begin(), rhs.end(), *iter) == rhs.end());
+			return false;
+	}
+	return true
+}
 
 namespace Dedekind
 {

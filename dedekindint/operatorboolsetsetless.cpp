@@ -1,6 +1,8 @@
 
 #include "dedekindint.ih"
 
+#if 0
+
 bool SetSetLess::operator()(set<set<size_t>, SetLess> const &lhs,
 		set<set<size_t>, SetLess> const &rhs) const
 {
@@ -32,3 +34,5 @@ bool SetSetLess::operator()(set<set<size_t>, SetLess> const &lhs,
 	}
 	return true;
 }
+
+#endif

@@ -91,8 +91,8 @@ int main(int argc, char **argv)
 		// reduce over all cores
 		if (rank == 0)
 		{
-			size_t toReceive = size - 1;
-			while (toReceive--)
+			size_t toReceive = size;
+			while (--toReceive)
 			{
 				uint_fast64_t lohi[2];
 
@@ -127,8 +127,21 @@ int main(int argc, char **argv)
 				stringstream ss(argv[1]);
 				ss >> n;
 			}
-			cout << Dedekind::monotoneSubsets(n);
+
+			auto result = Dedekind::monotoneSubsets(n);
+			cout << result.size() << '\n' << result;
 		}
 	}
 	MPI::Finalize();
 }
+
+// typedef Dedekind::UInt128 (*fptr)(int, int); <-- pas aan zodat klopt
+
+// template<Int a = 3>
+// fptr findFunction(int b)
+// {
+//   if(a == b)
+//     return Dedekind::monotoneSubsets<a>;
+//   else
+//     return findFunction<a + 1>( b );
+// }

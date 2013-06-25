@@ -1,4 +1,6 @@
 
 #include "dedekindint.h"
 
+#include <iostream>
+
 using namespace std;
