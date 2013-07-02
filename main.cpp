@@ -30,46 +30,64 @@ std::ostream &operator<<(std::ostream &out, std::array<T, size> const &rhs)
 template <size_t size>
 struct PowerSet
 {
-	static void powersetRec(vector<bitset<size>> &bset);
+	static vector<bitset<size>> powersetRec();
 };
 
 template <size_t size>
-void PowerSet<size>::powersetRec(vector<bitset<size>> &bset)
+vector<bitset<size>> PowerSet<size>::powersetRec()
 {
-	vector<bitset<size - 1>> current;
-	PowerSet<size - 1>::powersetRec(current);
+	auto current = PowerSet<size - 1>::powersetRec();
 
+	vector<bitset<size>> result;
 	for (auto iter = current.begin(); iter != current.end(); ++iter)
 	{
 		bitset<size> tmp((*iter).to_ulong() + (1 << (size - 1)));
-		bset.push_back(tmp);
+		result.push_back(tmp);
 	}
 	for (auto iter = current.begin(); iter != current.end(); ++iter)
 	{
 		bitset<size> tmp((*iter).to_ulong());
-		bset.push_back(tmp);
+		result.push_back(tmp);
 	}
+	return result;
 }
 
 template <>
 struct PowerSet<0>
 {
-	static void powersetRec(vector<bitset<0>> &bset);
+	static vector<bitset<0>> powersetRec();
 };
 
-void PowerSet<0>::powersetRec(vector<bitset<0>> &bset)
+vector<bitset<0>> PowerSet<0>::powersetRec()
 {
-	bset.push_back(bitset<0>());
+	return vector<bitset<0>>({bitset<0>()});
 }
 
 template <size_t size>
-vector<bitset<size>> powerset()
+void printBitset(std::ostream &os, bitset<size> const &bset)
 {
-	vector<bitset<size>> result;
-	PowerSet<size>::powersetRec(result);
-	return result;
+	for (size_t idx = 0; idx != bset.size(); ++idx)
+	{
+		if (bset[idx])
+		{
+			os << idx << " ";
+		}
+	}
+	if (bset.none())
+	{
+		os << 'e';
+	}
+	os << '\n';
 }
 
+template <size_t size>
+void printPowerset(std::ostream &os, vector<bitset<size>> const &pset)
+{
+	for (auto iter = pset.begin(); iter != pset.end(); ++iter)
+	{
+		printBitset(os, (*iter));
+	}
+}
 
 int main(int argc, char **argv)
 {
@@ -90,7 +108,9 @@ int main(int argc, char **argv)
 	}
 
 
-	cout << powerset<2>() << '\n';
+	auto powerset = PowerSet<3>::powersetRec();
+
+	printPowerset(cout, powerset);
 
 	if (argc == 3 && string(argv[1]) == "-d")
 	{
