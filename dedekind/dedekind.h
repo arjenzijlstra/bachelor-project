@@ -9,14 +9,7 @@
 #include <algorithm>
 #include <omp.h>
 
-//#include <gmpxx.h> // for big numbers
-
 #include "../uint128/uint128.h"
-
-#define PREPROCESSING 1
-#define PRAGMAOMP 0
-#define DYNAMIC 0
-#define ONTHESPOT 0
 
 class BitSetLess
 {
@@ -49,16 +42,6 @@ template <size_t size>
 bool operator<=(std::bitset<size> lhs, std::bitset<size> const &rhs)
 {
 	return (lhs.flip() | rhs).all();
-
-	// I guess the above statement is faster.
-	// for (size_t idx = 0; idx != size; ++idx)
-	// {
-	//     if (lhs[idx] && !rhs[idx])
-	//     {
-	//         return false;
-	//     }
-	// }
-	// return true;
 }
 
 namespace Dedekind
@@ -90,19 +73,6 @@ namespace Dedekind
 				}
 				return lhs.size() < rhs.size();
 			}
-		/*
-			if (lhs.size() == rhs.size())
-			{
-				for (auto iter = lhs.begin(), iter2 = rhs.begin(); iter != lhs.end();
-						++iter, ++iter2)
-				{
-					if (*iter != *iter2)
-					{
-						return *iter < *iter2;
-					}
-				}
-			}
-		//*/
 			return lhs.size() < rhs.size();
 		}
 
@@ -225,11 +195,10 @@ namespace Dedekind
 		std::bitset<(size << 1)> concatenate(std::bitset<size> const &lhs,
 				std::bitset<size> const &rhs)
 		{
-			size_t const new_size = (size << 1);
-			std::bitset<new_size> tmp_lhs(lhs.to_ullong() << size);
-			std::bitset<new_size> tmp_rhs(rhs.to_ullong());
+			std::string lhs_str = lhs.to_string();
+			std::string rhs_str = rhs.to_string();
 
-			return (tmp_lhs | tmp_rhs);
+			return std::bitset<(size << 1)>(lhs_str + rhs_str);
 		}
 	} // end namespace Internal
 
@@ -275,11 +244,6 @@ namespace Dedekind
 			}
 		}
 
-		for (auto iter = rn.begin(); iter != rn.end(); ++iter)
-		{
-			//std::sort((*iter).begin(), (*iter).end(), BitSetLess);
-		}
-
 		return rn;
 	}
 
@@ -303,28 +267,18 @@ namespace Dedekind
 			}
 		}
 
-		std::cerr << rank << ": Preprocessing complete.\n";
+		// Preprocessing complete
 
 		UInt128 result(0);
-		// #pragma omp parallel for reduction(+:result) shared(dn) schedule(static, 1)
 		for (size_t idx = rank; idx < rn.size(); idx += nprocs)
 		{
 			auto iter(rn[idx].begin());
-			// std::cerr << rank << ": " << idx << std::endl;
 			for (auto iter2 = dn.begin(); iter2 != dn.end(); ++iter2)
 			{
 				auto first = *iter & *iter2;
 				auto second = duals[*iter] & duals[*iter2];
 
 				result += rn[idx].size() * etas[first] * etas[second];
-
-#if 0
-				result += rn[idx].size() * Internal::eta(*iter & *iter2, dn)
-						 * Internal::eta(Internal::dual(*iter) & Internal::dual(*iter2), dn);
-
-				result += etas[iter & *iter2]
-						  * etas[duals[iter] & duals[*iter2]];
-#endif
 			}
 		}
 

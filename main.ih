@@ -7,13 +7,9 @@
 #include <vector>
 #include <array>
 #include <list>
-#include <ctime>
-#include <sys/time.h>
 #include <mpi.h>
 #include <stdlib.h>
-#include <omp.h>
 
-#include "dedekindint/dedekindint.h"
 #include "dedekind/dedekind.h"
 #include "uint128/uint128.h"
 

@@ -1,13 +1,6 @@
 
 #include "main.ih"
 
-static double timer(void)
-{
-	struct timeval tm;
-	gettimeofday(&tm, NULL);
-	return tm.tv_sec + tm.tv_usec / 1000000.0;
-}
-
 template <typename T, typename Alloc>
 std::ostream &operator<<(std::ostream &out, std::set<T, Alloc> const &rhs)
 {
@@ -34,6 +27,50 @@ std::ostream &operator<<(std::ostream &out, std::array<T, size> const &rhs)
 	return out;
 }
 
+template <size_t size>
+struct PowerSet
+{
+	static void powersetRec(vector<bitset<size>> &bset);
+};
+
+template <size_t size>
+void PowerSet<size>::powersetRec(vector<bitset<size>> &bset)
+{
+	vector<bitset<size - 1>> current;
+	PowerSet<size - 1>::powersetRec(current);
+
+	for (auto iter = current.begin(); iter != current.end(); ++iter)
+	{
+		bitset<size> tmp((*iter).to_ulong() + (1 << (size - 1)));
+		bset.push_back(tmp);
+	}
+	for (auto iter = current.begin(); iter != current.end(); ++iter)
+	{
+		bitset<size> tmp((*iter).to_ulong());
+		bset.push_back(tmp);
+	}
+}
+
+template <>
+struct PowerSet<0>
+{
+	static void powersetRec(vector<bitset<0>> &bset);
+};
+
+void PowerSet<0>::powersetRec(vector<bitset<0>> &bset)
+{
+	bset.push_back(bitset<0>());
+}
+
+template <size_t size>
+vector<bitset<size>> powerset()
+{
+	vector<bitset<size>> result;
+	PowerSet<size>::powersetRec(result);
+	return result;
+}
+
+
 int main(int argc, char **argv)
 {
 	MPI::Init(argc, argv);
@@ -46,54 +83,57 @@ int main(int argc, char **argv)
 		rank = MPI::COMM_WORLD.Get_rank();
 		size = MPI::COMM_WORLD.Get_size();
 	}
-	catch (MPI::Exception e)
+	catch (MPI::Exception const &exception)
 	{
-		cerr << "MPI ERROR: " << e.Get_error_code()
-			  << " - " << e.Get_error_string() << endl;
+		cerr << "MPI error: " << exception.Get_error_code() << " - "
+				<< exception.Get_error_string() << endl;
 	}
 
 
-	if (argc == 3 && string(argv[1]) == "-b")
+	cout << powerset<2>() << '\n';
+
+	if (argc == 3 && string(argv[1]) == "-d")
 	{
 		size_t n = 2;
 		stringstream ss(argv[2]);
 		ss >> n;
 
-		double timer1 = timer();
+		double start = MPI::Wtime();
 
 		Dedekind::UInt128 result;
 		switch (n)
 		{
-			// case 3:
-			// 	result = Dedekind::monotoneSubsets<3>(rank, size);
-			// 	break;
-			// case 4:
-			// 	result = Dedekind::monotoneSubsets<4>(rank, size);
-			// 	break;
-			// case 5:
-			// 	result = Dedekind::monotoneSubsets<5>(rank, size);
-			// 	break;
+		// 	// case 3:
+		// 	// 	result = Dedekind::monotoneSubsets<3>(rank, size);
+		// 	// 	break;
+		// 	// case 4:
+		// 	// 	result = Dedekind::monotoneSubsets<4>(rank, size);
+		// 	// 	break;
+		// 	// case 5:
+		// 	// 	result = Dedekind::monotoneSubsets<5>(rank, size);
+		// 	// 	break;
 			case 6:
 				result = Dedekind::monotoneSubsets<6>(rank, size);
 				break;
 			case 7:
 				result = Dedekind::monotoneSubsets<7>(rank, size);
 				break;
-			case 8:
-				result = Dedekind::monotoneSubsets<8>(rank, size);
+			// case 8:
+			// 	result = Dedekind::monotoneSubsets<8>(rank, size);
 		}
 
 
-		double timer2 = timer();
-		cout << "Rank: " << rank << ": " << result << " in "
-			  << timer2 - timer1 << "s\n";
+		double end = MPI::Wtime();
+		cerr << "Rank " << rank << " done! Result: " << result << " in "
+			  << end - start << "s\n";
 
-		// reduce over all cores
+		// reduce over all processes
 		if (rank == 0)
 		{
 			size_t toReceive = size;
 			while (--toReceive)
 			{
+				// send the high and the low part of the result
 				uint_fast64_t lohi[2];
 
 				MPI::Status status;
@@ -102,10 +142,11 @@ int main(int argc, char **argv)
 
 				Dedekind::UInt128 tmp(lohi[0], lohi[1]);
 				result += tmp;
-
-				timer2 = timer();
-				cout << "Final: " << result << " in " << timer2 - timer1 << "s\n";
 			}
+
+			double final = MPI::Wtime();
+			cout << "d" << n << " = " << result
+				<< " (in " << final - start << "s)\n";
 		}
 		else
 		{
@@ -114,23 +155,17 @@ int main(int argc, char **argv)
 			lohi[1] = result.hi();
 			MPI::COMM_WORLD.Send(&lohi, 2, MPI::UNSIGNED_LONG, 0,
 					Dedekind::BIGINTTAG);
-		}
 
+
+			double final = MPI::Wtime();
+			cerr << "Rank " << rank << " exiting! Total: "
+					<< final - start << "s\n";
+		}
 	}
 	else
 	{
-		if (rank == 0)
-		{
-			size_t n = 0;
-			if (argc == 2)
-			{
-				stringstream ss(argv[1]);
-				ss >> n;
-			}
-
-			auto result = Dedekind::monotoneSubsets(n);
-			cout << result.size() << '\n' << result;
-		}
+		cout << "Usage: ./project -d x \n"
+				<< "Where x in [2..n) is the Dedekind Number to calculate.\n";
 	}
 	MPI::Finalize();
 }
