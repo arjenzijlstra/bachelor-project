@@ -143,7 +143,7 @@ namespace Dedekind
 		auto dn = Internal::MonotoneSubsets<Number - 2>::result;
 
 		std::cerr << "Rank " << rank << " is done generating D"
-				<< Number - 2 << dn.size() <<  '\n';
+				<< Number - 2 << ": " << dn.size() <<  '\n';
 
 		auto rn = generateRn<Number - 2>(dn);
 

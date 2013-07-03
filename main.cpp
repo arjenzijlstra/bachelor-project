@@ -31,24 +31,23 @@ int main(int argc, char **argv)
 
 		switch (n)
 		{
-			default:
 			case 3:
-				Dedekind::monotoneSubsets<3>(rank, size);
+				result = Dedekind::monotoneSubsets<3>(rank, size);
 				break;
-			// case 4:
-			// 	Dedekind::monotoneSubsets<4>(rank, size);
-			// 	break;
-			// case 5:
-			// 	Dedekind::monotoneSubsets<5>(rank, size);
-			// 	break;
+			case 4:
+				result = Dedekind::monotoneSubsets<4>(rank, size);
+				break;
+			case 5:
+				result = Dedekind::monotoneSubsets<5>(rank, size);
+				break;
 			case 6:
-				Dedekind::monotoneSubsets<6>(rank, size);
+				result = Dedekind::monotoneSubsets<6>(rank, size);
 				break;
 			case 7:
-				Dedekind::monotoneSubsets<7>(rank, size);
+				result = Dedekind::monotoneSubsets<7>(rank, size);
 				break;
-			// case 8:
-			// 	Dedekind::monotoneSubsets<8>(rank, size);
+			case 8:
+			 	result = Dedekind::monotoneSubsets<8>(rank, size);
 		}
 
 		double end = MPI::Wtime();
