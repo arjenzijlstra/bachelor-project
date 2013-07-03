@@ -1,27 +1,6 @@
 
 #include "main.ih"
 
-typedef Dedekind::UInt128 (*fptr)(size_t, size_t);
-
-template <size_t a = 8>
-fptr findFunction(size_t b)
-{
-	if (a == b)
-	{
-		return Dedekind::monotoneSubsets<a>;
-	}
-	else
-	{
-		return findFunction<a - 1>(b);
-	}
-}
-
-template <>
-fptr findFunction<3>(size_t b)
-{
-	return Dedekind::monotoneSubsets<3>;
-}
-
 int main(int argc, char **argv)
 {
 	MPI::Init(argc, argv);
@@ -77,6 +56,7 @@ int main(int argc, char **argv)
 		}
 		else
 		{
+			// send the high and the low part of the result
 			uint_fast64_t lohi[2];
 			lohi[0] = result.lo();
 			lohi[1] = result.hi();
@@ -95,7 +75,7 @@ int main(int argc, char **argv)
 			<< "Where X in [2..n) is the Dedekind Number to calculate.\n"
 			<< "And N is the number of processes you would like to use.\n\n"
 			<< "Note: The program will also work when running normally "
-			<< "(without mpirun).\n"
+			<< "(without using mpirun).\n"
 			<< "In that case the program will just run on 1 core.\n";
 	}
 	MPI::Finalize();
