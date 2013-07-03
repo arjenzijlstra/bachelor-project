@@ -3,7 +3,7 @@
 #CC = g++
 CC = mpic++
 CFLAGS = --std=c++0x -Wall -Wextra -pedantic -O2 -g
-LDFLAGS = -lgmpxx -lgmp #--enable-cxx-exceptions
+LDFLAGS =
 
 SOURCES = $(wildcard *.cpp */*.cpp)
 OBJECTS = $(SOURCES:.cpp=.o)

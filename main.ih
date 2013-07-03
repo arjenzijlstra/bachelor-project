@@ -6,7 +6,6 @@
 #include <bitset>
 #include <vector>
 #include <array>
-#include <list>
 #include <mpi.h>
 #include <stdlib.h>
 

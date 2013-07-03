@@ -16,9 +16,8 @@ namespace Dedekind
 			friend std::ostream &operator<<(std::ostream &out,
 					UInt128 const &uint128);
 
-			UInt128() = default;
 			UInt128(UInt128 const &other) = default;
-			UInt128(uint_fast64_t lo, uint_fast64_t hi = 0);
+			UInt128(uint_fast64_t lo = 0, uint_fast64_t hi = 0);
 
 			UInt128 &operator+=(uint_fast64_t other);
 			UInt128 &operator+=(UInt128 const &other);

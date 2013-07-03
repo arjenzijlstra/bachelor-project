@@ -1,92 +1,25 @@
 
 #include "main.ih"
 
-template <typename T, typename Alloc>
-std::ostream &operator<<(std::ostream &out, std::set<T, Alloc> const &rhs)
-{
-	out << '{';
-	for (typename std::set<T>::iterator iter = rhs.begin();
-			iter != rhs.end();
-				++iter)
-	{
-		out << ((iter != rhs.begin()) ? ", " : "") << *iter;
-	}
-	out << '}';
-	return out;
-}
+typedef Dedekind::UInt128 (*fptr)(size_t, size_t);
 
-template <typename T, size_t size>
-std::ostream &operator<<(std::ostream &out, std::array<T, size> const &rhs)
+template <size_t a = 8>
+fptr findFunction(size_t b)
 {
-	out << '{';
-	for (auto iter = rhs.begin(); iter != rhs.end(); ++iter)
+	if (a == b)
 	{
-		out << ((iter != rhs.begin()) ? ", " : "") << *iter;
+		return Dedekind::monotoneSubsets<a>;
 	}
-	out << '}';
-	return out;
-}
-
-template <size_t size>
-struct PowerSet
-{
-	static vector<bitset<size>> powersetRec();
-};
-
-template <size_t size>
-vector<bitset<size>> PowerSet<size>::powersetRec()
-{
-	auto current = PowerSet<size - 1>::powersetRec();
-
-	vector<bitset<size>> result;
-	for (auto iter = current.begin(); iter != current.end(); ++iter)
+	else
 	{
-		bitset<size> tmp((*iter).to_ulong() + (1 << (size - 1)));
-		result.push_back(tmp);
+		return findFunction<a - 1>(b);
 	}
-	for (auto iter = current.begin(); iter != current.end(); ++iter)
-	{
-		bitset<size> tmp((*iter).to_ulong());
-		result.push_back(tmp);
-	}
-	return result;
 }
 
 template <>
-struct PowerSet<0>
+fptr findFunction<3>(size_t b)
 {
-	static vector<bitset<0>> powersetRec();
-};
-
-vector<bitset<0>> PowerSet<0>::powersetRec()
-{
-	return vector<bitset<0>>({bitset<0>()});
-}
-
-template <size_t size>
-void printBitset(std::ostream &os, bitset<size> const &bset)
-{
-	for (size_t idx = 0; idx != bset.size(); ++idx)
-	{
-		if (bset[idx])
-		{
-			os << idx << " ";
-		}
-	}
-	if (bset.none())
-	{
-		os << 'e';
-	}
-	os << '\n';
-}
-
-template <size_t size>
-void printPowerset(std::ostream &os, vector<bitset<size>> const &pset)
-{
-	for (auto iter = pset.begin(); iter != pset.end(); ++iter)
-	{
-		printBitset(os, (*iter));
-	}
+	return Dedekind::monotoneSubsets<3>;
 }
 
 int main(int argc, char **argv)
@@ -107,11 +40,6 @@ int main(int argc, char **argv)
 				<< exception.Get_error_string() << endl;
 	}
 
-
-	auto powerset = PowerSet<3>::powersetRec();
-
-	printPowerset(cout, powerset);
-
 	if (argc == 3 && string(argv[1]) == "-d")
 	{
 		size_t n = 2;
@@ -120,28 +48,7 @@ int main(int argc, char **argv)
 
 		double start = MPI::Wtime();
 
-		Dedekind::UInt128 result;
-		switch (n)
-		{
-		// 	// case 3:
-		// 	// 	result = Dedekind::monotoneSubsets<3>(rank, size);
-		// 	// 	break;
-		// 	// case 4:
-		// 	// 	result = Dedekind::monotoneSubsets<4>(rank, size);
-		// 	// 	break;
-		// 	// case 5:
-		// 	// 	result = Dedekind::monotoneSubsets<5>(rank, size);
-		// 	// 	break;
-			case 6:
-				result = Dedekind::monotoneSubsets<6>(rank, size);
-				break;
-			case 7:
-				result = Dedekind::monotoneSubsets<7>(rank, size);
-				break;
-			// case 8:
-			// 	result = Dedekind::monotoneSubsets<8>(rank, size);
-		}
-
+		Dedekind::UInt128 result = findFunction(n)(rank, size);
 
 		double end = MPI::Wtime();
 		cerr << "Rank " << rank << " done! Result: " << result << " in "
@@ -184,19 +91,14 @@ int main(int argc, char **argv)
 	}
 	else
 	{
-		cout << "Usage: ./project -d x \n"
-				<< "Where x in [2..n) is the Dedekind Number to calculate.\n";
+		cout << "Usage: mpirun -np N ./project -d X \n"
+			<< "Where X in [2..n) is the Dedekind Number to calculate.\n"
+			<< "And N is the number of processes you would like to use.\n\n"
+			<< "Note: The program will also work when running normally "
+			<< "(without mpirun).\n"
+			<< "In that case the program will just run on 1 core.\n";
 	}
 	MPI::Finalize();
 }
 
-// typedef Dedekind::UInt128 (*fptr)(int, int); <-- pas aan zodat klopt
 
-// template<Int a = 3>
-// fptr findFunction(int b)
-// {
-//   if(a == b)
-//     return Dedekind::monotoneSubsets<a>;
-//   else
-//     return findFunction<a + 1>( b );
-// }
