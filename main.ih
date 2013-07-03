@@ -1,15 +1,31 @@
 
 #include <iostream>
-#include <iomanip>
-#include <set>
 #include <sstream>
-#include <bitset>
-#include <vector>
-#include <array>
 #include <mpi.h>
-#include <stdlib.h>
 
 #include "dedekind/dedekind.h"
 #include "uint128/uint128.h"
 
 using namespace std;
+
+
+typedef Dedekind::UInt128 (*fptr)(size_t, size_t);
+
+template <size_t a = 8>
+fptr findFunction(size_t b)
+{
+	if (a == b)
+	{
+		return Dedekind::monotoneSubsets<a>;
+	}
+	else
+	{
+		return findFunction<a - 1>(b);
+	}
+}
+
+template <>
+fptr findFunction<6>(size_t b)
+{
+	return Dedekind::monotoneSubsets<6>;
+}

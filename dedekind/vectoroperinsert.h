@@ -2,6 +2,7 @@
 #ifndef VECTOROPERINSET_H_
 #define VECTOROPERINSET_H_
 
+#include <algorithm>
 #include <array>
 #include <bitset>
 #include <iostream>
@@ -9,8 +10,9 @@
 #include <string>
 #include <vector>
 
-#include "powersetbin.h"
+#include "bitsetless.h"
 #include "powerof2.h"
+#include "powersetbin.h"
 
 template <typename Type>
 std::ostream &operator<<(std::ostream &out,

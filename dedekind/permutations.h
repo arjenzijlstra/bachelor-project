@@ -2,12 +2,14 @@
 #ifndef PERMUTATIONS_H_
 #define PERMUTATIONS_H_
 
+#include <algorithm>
 #include <array>
 #include <bitset>
+#include <set>
+#include <vector>
 
 #include "powersetbin.h"
 
-#include "vectoroperinsert.h"
 
 namespace Dedekind
 {

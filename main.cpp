@@ -27,7 +27,29 @@ int main(int argc, char **argv)
 
 		double start = MPI::Wtime();
 
-		Dedekind::UInt128 result = findFunction(n)(rank, size);
+		Dedekind::UInt128 result;// = findFunction(n)(rank, size);
+
+		switch (n)
+		{
+			default:
+			case 3:
+				Dedekind::monotoneSubsets<3>(rank, size);
+				break;
+			// case 4:
+			// 	Dedekind::monotoneSubsets<4>(rank, size);
+			// 	break;
+			// case 5:
+			// 	Dedekind::monotoneSubsets<5>(rank, size);
+			// 	break;
+			case 6:
+				Dedekind::monotoneSubsets<6>(rank, size);
+				break;
+			case 7:
+				Dedekind::monotoneSubsets<7>(rank, size);
+				break;
+			// case 8:
+			// 	Dedekind::monotoneSubsets<8>(rank, size);
+		}
 
 		double end = MPI::Wtime();
 		cerr << "Rank " << rank << " done! Result: " << result << " in "
