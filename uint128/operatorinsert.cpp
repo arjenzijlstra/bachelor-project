@@ -57,7 +57,7 @@ namespace Dedekind
 			}
 		}
 
-		// find highest digit to be inserted in out
+		// find highest digit to be inserted in outputstream
 		int idx;
 		for (idx = 38; idx > 0; --idx)
 		{
