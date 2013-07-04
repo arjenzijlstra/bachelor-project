@@ -7,18 +7,6 @@ namespace Dedekind
 {
 	std::ostream &operator<<(std::ostream &out, UInt128 const &uint128)
 	{
-		// **** WRONG ****
-		// // get current precision, set to fixed 0, print, set back to default
-		// streamsize old = cout.precision();
-		// out.precision(0);
-
-		// out << std::fixed << uint128.d_hi * pow(2, 64) + uint128.d_lo;
-
-		// out.unsetf(ios_base::floatfield);
-		// out.precision(old);
-		// **** WRONG ****
-
-
 		size_t d[39] = {0}; // a 128 bit number has at most 39 digits
 
 		// starting at the highest, for each bit
@@ -30,7 +18,7 @@ namespace Dedekind
 				d[0]++;
 			}
 
-			// multiply by 2. now the highest bit will reach the value 2^63
+			// multiply by 2, since bits represent powers of 2
 			for (size_t idx = 0; idx < 39; ++idx)
 			{
 				d[idx] *= 2;

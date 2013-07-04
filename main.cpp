@@ -3,6 +3,8 @@
 
 int main(int argc, char **argv)
 {
+	gettimeofday(&tim2, NULL);
+
 	MPI::Init(argc, argv);
 	MPI::COMM_WORLD.Set_errhandler(MPI::ERRORS_THROW_EXCEPTIONS);
 
@@ -27,28 +29,28 @@ int main(int argc, char **argv)
 
 		double start = MPI::Wtime();
 
-		Dedekind::UInt128 result;// = findFunction(n)(rank, size);
+		Dedekind::UInt128 result = findFunction(n)(rank, size);
 
-		switch (n)
-		{
-			case 3:
-				result = Dedekind::monotoneSubsets<3>(rank, size);
-				break;
-			case 4:
-				result = Dedekind::monotoneSubsets<4>(rank, size);
-				break;
-			case 5:
-				result = Dedekind::monotoneSubsets<5>(rank, size);
-				break;
-			case 6:
-				result = Dedekind::monotoneSubsets<6>(rank, size);
-				break;
-			case 7:
-				result = Dedekind::monotoneSubsets<7>(rank, size);
-				break;
-			case 8:
-			 	result = Dedekind::monotoneSubsets<8>(rank, size);
-		}
+		// switch (n)
+		// {
+		// 	case 3:
+		// 		result = Dedekind::monotoneSubsets<3>(rank, size);
+		// 		break;
+		// 	case 4:
+		// 		result = Dedekind::monotoneSubsets<4>(rank, size);
+		// 		break;
+		// 	case 5:
+		// 		result = Dedekind::monotoneSubsets<5>(rank, size);
+		// 		break;
+		// 	case 6:
+		// 		result = Dedekind::monotoneSubsets<6>(rank, size);
+		// 		break;
+		// 	case 7:
+		// 		result = Dedekind::monotoneSubsets<7>(rank, size);
+		// 		break;
+		// 	case 8:
+		// 	 	result = Dedekind::monotoneSubsets<8>(rank, size);
+		// }
 
 		double end = MPI::Wtime();
 		cerr << "Rank " << rank << " done! Result: " << result << " in "
@@ -100,6 +102,9 @@ int main(int argc, char **argv)
 			<< "In that case the program will just run on 1 core.\n";
 	}
 	MPI::Finalize();
+	struct timeval tim1;
+	gettimeofday(&tim1, NULL);
+	cerr << tim1.tv_sec + (tim1.tv_usec / 1000000.0) - (tim2.tv_sec + (tim2.tv_usec / 1000000.0)) << endl;
 }
 
 

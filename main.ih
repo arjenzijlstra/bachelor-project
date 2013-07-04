@@ -2,6 +2,7 @@
 #include <iostream>
 #include <sstream>
 #include <mpi.h>
+#include <sys/time.h>
 
 #include "dedekind/dedekind.h"
 #include "uint128/uint128.h"
@@ -9,11 +10,17 @@
 using namespace std;
 
 
+struct timeval tim2;
+
+
 typedef Dedekind::UInt128 (*fptr)(size_t, size_t);
 
 template <size_t a = 8>
 fptr findFunction(size_t b)
 {
+	struct timeval tim;
+	gettimeofday(&tim, NULL);
+	cerr << a << " " << tim.tv_sec + (tim.tv_usec / 1000000.0) - (tim2.tv_sec + (tim2.tv_usec / 1000000.0)) << endl;
 	if (a == b)
 	{
 		return Dedekind::monotoneSubsets<a>;
@@ -27,5 +34,8 @@ fptr findFunction(size_t b)
 template <>
 fptr findFunction<6>(size_t b)
 {
+	struct timeval tim;
+	gettimeofday(&tim, NULL);
+	cerr << "6:" << " " << tim.tv_sec + (tim.tv_usec / 1000000.0) - (tim2.tv_sec + (tim2.tv_usec / 1000000.0)) << endl;
 	return Dedekind::monotoneSubsets<6>;
 }
