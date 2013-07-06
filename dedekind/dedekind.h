@@ -30,9 +30,7 @@ namespace Dedekind
 	std::vector<std::vector<std::bitset<Power>>> generateRn(
 			std::vector<std::bitset<Power>> const &dn)
 	{
-		auto permutations =
-				Internal::permutations<Number, Power>();
-
+		auto permutations = Internal::permutations<Number, Power>();
 
 		std::vector<std::vector<std::bitset<Power>>> rn;
 		std::set<std::bitset<Power>, BitSetLess> processed;

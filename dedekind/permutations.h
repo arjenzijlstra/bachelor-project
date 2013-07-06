@@ -60,8 +60,7 @@ std::vector<std::array<size_t, Power>> permutations()
 	std::vector<std::array<size_t, Power>> result;
 	do
 	{
-		result.push_back(
-				Internal::subsetPermutation<Number, Power>(permutation, powerset));
+		result.push_back(subsetPermutation<Number, Power>(permutation, powerset));
 	}
 	while (std::next_permutation(permutation.begin(), permutation.end()));
 
