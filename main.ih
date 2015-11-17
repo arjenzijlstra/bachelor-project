@@ -29,7 +29,8 @@ fptr findFunction(size_t b)
 }
 
 template <>
-fptr findFunction<6>(size_t b)
+fptr findFunction<2>(size_t b)
 {
-	return Dedekind::monotoneSubsets<6>;
+	(void) b;
+	return Dedekind::monotoneSubsets<2>;
 }

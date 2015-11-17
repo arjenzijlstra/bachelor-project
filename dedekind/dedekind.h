@@ -97,7 +97,6 @@ namespace Dedekind
 			std::vector<std::bitset<size>> const &dn)
 	{
 		std::vector<std::bitset<(size << 1)>> dn1;
-
 		for (auto iter = dn.begin(); iter != dn.end(); ++iter)
 		{
 			for (auto iter2 = dn.begin(); iter2 != dn.end(); ++iter2)
@@ -117,28 +116,33 @@ namespace Dedekind
 		template <size_t Number>
 		struct MonotoneSubsets
 		{
-			static std::vector<std::bitset<PowerOf2<Number>::value>> result;
+			static std::vector<std::bitset<PowerOf2<Number>::value>> result();
 		};
 
 		template <size_t Number>
 		std::vector<std::bitset<PowerOf2<Number>::value>>
-				MonotoneSubsets<Number>::result(generate(
-						MonotoneSubsets<(Number - 1)>::result));
+			MonotoneSubsets<Number>::result()
+		{
+			return generate(MonotoneSubsets<(Number - 1)>::result());
+		}
 
 		template <>
 		struct MonotoneSubsets<0>
 		{
-			static std::vector<std::bitset<1>> result;
+			static std::vector<std::bitset<1>> result();
 		};
 
-		std::vector<std::bitset<1>> MonotoneSubsets<0>::result({std::bitset<1>(0),
+		std::vector<std::bitset<1>> MonotoneSubsets<0>::result()
+		{
+			return std::vector<std::bitset<1>>({std::bitset<1>(0),
 				std::bitset<1>(1)});
+		}
 	}
 
 	template <size_t Number>
 	UInt128 monotoneSubsets(size_t rank = 0, size_t size = 1)
 	{
-		auto dn = Internal::MonotoneSubsets<Number - 2>::result;
+		auto dn = Internal::MonotoneSubsets<Number - 2>::result();
 
 		std::cerr << "Rank " << rank << " is done generating D"
 				<< Number - 2 << ": " << dn.size() <<  '\n';

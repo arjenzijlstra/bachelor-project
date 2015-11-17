@@ -2,7 +2,7 @@
 # use g++ 4.7 together with C++11 as standard
 #CC = g++
 CC = mpic++
-CFLAGS = --std=c++0x -Wall -Wextra -pedantic -O2 -g
+CFLAGS = --std=c++11 -Wall -Wextra -pedantic -O2 -g
 LDFLAGS =
 
 SOURCES = $(wildcard *.cpp */*.cpp)
